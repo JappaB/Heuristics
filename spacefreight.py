@@ -119,7 +119,7 @@ def cargoMostDensityLeftAircraft (sortedCargolist1):
 		if densLeft[0]['kgsleft'] >= cargo['kgs'] and densLeft[0]['spaceleft'] >= cargo['m3']:
 
 			# zet het pakketje in de minst volle aircraft
-			cargo['location'] = densLeft[i]['location']
+			cargo['location'] = densLeft[0]['location']
 
 			# update de locatie over van de aircraft
 			densLeft[0]['kgsleft'] -= cargo['kgs']
@@ -129,40 +129,71 @@ def cargoMostDensityLeftAircraft (sortedCargolist1):
 		elif densLeft[1]['kgsleft'] >= cargo['kgs'] and densLeft[1]['spaceleft'] >= cargo['m3']:
 
 			# zet het pakketje in de minst volle aircraft
-			cargo['location'] = densLeft[i]['location']
+			cargo['location'] = densLeft[1]['location']
 
 			# update de locatie over van de aircraft
 			densLeft[1]['kgsleft'] -= cargo['kgs']
 			densLeft[1]['spaceleft'] -= cargo['m3']
 			densLeft[1]['densleft'] = densLeft[1]['kgsleft']/densLeft[1]['spaceleft']
 
-		for i in range(3):
-			if densLeft[i]['kgsleft'] >= cargo['kgs'] and densLeft[i]['spaceleft'] >= cargo['m3']:
+		elif densLeft[2]['kgsleft'] >= cargo['kgs'] and densLeft[2]['spaceleft'] >= cargo['m3']:
 
-				# zet het pakketje in de minst volle aircraft
-				cargo['location'] = densLeft[i]['location']
+			# zet het pakketje in de minst volle aircraft
+			cargo['location'] = densLeft[2]['location']
 
-				# update de locatie over van de aircraft
-				densLeft[i]['kgsleft'] -= cargo['kgs']
-				densLeft[i]['spaceleft'] -= cargo['m3']
-				densLeft[i]['densleft'] = densLeft[i]['kgsleft']/densLeft[i]['spaceleft']
+			# update de locatie over van de aircraft
+			densLeft[2]['kgsleft'] -= cargo['kgs']
+			densLeft[2]['spaceleft'] -= cargo['m3']
+			densLeft[2]['densleft'] = densLeft[2]['kgsleft']/densLeft[2]['spaceleft']
 
-				# ALS IN IFLOOP DAN NAAR NIEUW PAKKET
+		elif densLeft[3]['kgsleft'] >= cargo['kgs'] and densLeft[3]['spaceleft'] >= cargo['m3']:
 
-		# BEGINNEN MET RUILEN
+			# zet het pakketje in de minst volle aircraft
+			cargo['location'] = densLeft[3]['location']
 
-		i = 0
-		# Check wat er nog over is
-		for cargo in sortedCargolist1:
-			if cargo['location'] is 'Ground':
-				i += 1
-				# print("cargo {} densleft is".format(cargo['id']))
-				# print(cargo['kgs'])
-				# print(cargo['m3'])
-		# error!! moeten dan gaan ruilen
-		print i
-		print("Error VAN SANNE")
-		return 0
+			# update de locatie over van de aircraft
+			densLeft[3]['kgsleft'] -= cargo['kgs']
+			densLeft[3]['spaceleft'] -= cargo['m3']
+			densLeft[3]['densleft'] = densLeft[3]['kgsleft']/densLeft[3]['spaceleft']
+
+		# for i in range(3):
+		# 	if densLeft[i]['kgsleft'] >= cargo['kgs'] and densLeft[i]['spaceleft'] >= cargo['m3']:
+
+		# 		# zet het pakketje in de minst volle aircraft
+		# 		cargo['location'] = densLeft[i]['location']
+
+		# 		# update de locatie over van de aircraft
+		# 		densLeft[i]['kgsleft'] -= cargo['kgs']
+		# 		densLeft[i]['spaceleft'] -= cargo['m3']
+		# 		densLeft[i]['densleft'] = densLeft[i]['kgsleft']/densLeft[i]['spaceleft']
+
+		# 		# ALS IN IFLOOP DAN NAAR NIEUW PAKKET
+
+	# BEGINNEN MET RUILEN, op deze regel?
+	for aircraft in densLeft:
+		print("")
+		print("location")
+		print(aircraft['location'])
+		print("kgsleft")
+		print(aircraft['kgsleft'])
+		print("spaceleft")
+		print(aircraft['spaceleft'])
+		print("")
+	
+	i = 0
+	# Check wat er nog over is
+	for cargo in sortedCargolist1:
+		if cargo['location'] is 'Ground':
+			i += 1
+			print("cargo {}".format(cargo['id']))
+			print(cargo['kgs'])
+			print(cargo['m3'])
+			print("")
+	# error!! moeten dan gaan ruilen
+	print("")
+	print("Pakketjes over")
+	print i
+	print("TODO RUILEN")
 
 # Algoritme om pakketjes in te pakken aan de hand van most weight left
 def cargoMostWeightLeftAircraft (sortedCargolist1):

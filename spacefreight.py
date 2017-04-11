@@ -4,7 +4,7 @@ Space Freight opdracht B
 
 Jasper Bakker (10260250)
 Sanne Berendschot (10269290)
-Laurens vd Ziel
+Laurens vd Ziel (10653384)
 
 '''
 
@@ -14,6 +14,7 @@ import os
 from operator import itemgetter
 
 # Misschien beter om classes te gebruiken in plaats van dicts?
+# Landen als variabele later en naam scpacecraft als naam dictionary
 locationList = ['Cygnus', 'Verne ATV', 'Progress', 'Kounotori', 'Ground']
 USA = {'location': locationList[0],'kg': 2000, 'm3': 18.9}
 Europe = {'location': locationList[1],'kg': 2300 ,'m3': 13.1};
@@ -30,9 +31,9 @@ with open('Cargolist1.json') as cargolistFile1:
 
 # Create datastructure
 for cargo in cargolist1:
-	 cargo['location'] = locationList[4]
-	 # kg/m2 ratio berekenen voor alles in de cargolist
-	 cargo['density'] = (cargo['m3']/cargo['kgs'])
+	cargo['location'] = locationList[4]
+	# kg/m2 ratio berekenen voor alles in de cargolist
+	cargo['density'] = (cargo['m3']/cargo['kgs'])
 
 # Check hoe cargolist eruit ziet
 print (cargolist1)

@@ -43,7 +43,6 @@ def main():
 	#sortedCargolist1 = cargolist1.sort(key = itemgetter(4))
 	cargoB(cargolist1)
 
-<<<<<<< HEAD
 	# Misschien beter om classes te gebruiken in plaats van dicts?
 	locationList = ['Cygnus', 'Verne ATV', 'Progress', 'Kounotori', 'Ground']
 	Cygnus = {'location': locationList[0],'kg': 2000, 'm3': 18.9}
@@ -78,7 +77,7 @@ def main():
 def cargoRandom (cargolist1):
 
 	# create random number generator
-=======
+
 # Recursively devide the cargo among the different spacecrafts for part B of the asignment
 def cargoB (cargolist):
 
@@ -87,7 +86,6 @@ def cargoB (cargolist):
 	sortedCargolist1 = sorted(cargolist, key = lambda k: k['density'], reverse = True)
 
 	print(sortedCargolist1)
->>>>>>> origin/master
 
 	#
 
@@ -103,7 +101,6 @@ def cargoLeastFullAircraft (sortedCargolist1):
 
 		# sorteer locatielijst op hoeveel plek er over is
 
-<<<<<<< HEAD
 		# check of er genoeg plek is om het pakketje te plaatsen 
 		if spaceLeft[0] < cargo['kgs']:
 			print("Error")
@@ -113,7 +110,6 @@ def cargoLeastFullAircraft (sortedCargolist1):
 
 		# update de locatie over van de aircraft
 
-=======
 if __name__ == '__main__':
 	main()
->>>>>>> origin/master
+

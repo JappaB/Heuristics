@@ -34,7 +34,10 @@ for cargo in cargolist1:
 	 # kg/m2 ratio berekenen voor alles in de cargolist
 	 cargo['density'] = (cargo['m3']/cargo['kgs'])
 
+# Check hoe cargolist eruit ziet
 print (cargolist1)
+
+# Sort the cargolist on ???
 sortedCargolist1 = cargolist1.sort(key = itemgetter(4))
 
 print(sortedCargolist1)

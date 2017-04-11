@@ -15,10 +15,10 @@ from operator import itemgetter
 
 # Misschien beter om classes te gebruiken in plaats van dicts?
 locationList = ['Cygnus', 'Verne ATV', 'Progress', 'Kounotori', 'Ground']
-USA = {'location': locationList[0],'kg': 2000, 'm3': 18.9}
-Europe = {'location': locationList[1],'kg': 2300 ,'m3': 13.1};
-Rusia = {'location': locationList[2],'kg': 2400,'m3': 7.6};
-Japan = {'location': locationList[3],'kg': 5200,'m3': 14};
+Cygnus = {'location': locationList[0],'kg': 2000, 'm3': 18.9}
+VerneATV = {'location': locationList[1],'kg': 2300 ,'m3': 13.1};
+Progress = {'location': locationList[2],'kg': 2400,'m3': 7.6};
+Kounotori = {'location': locationList[3],'kg': 5200,'m3': 14};
 
 # Import file 
 # LET OP!! (misschien later nog even netjes 
@@ -37,22 +37,38 @@ for cargo in cargolist1:
 print (cargolist1)
 sortedCargolist1 = cargolist1.sort(key = itemgetter(4))
 
-print(sortedCargolist1)
-# Recursively devide the cargo among the different spacecrafts for part B of the asignment
-def cargoB (cargolist):
-
-	# Sort bij density http://stackoverflow.com/questions/3121979/how-to-sort-list-tuple-of-lists-tuples
+# Sort bij density http://stackoverflow.com/questions/3121979/how-to-sort-list-tuple-of-lists-tuples
 	sortedCargolist1 = sorted(cargolist1, key = lambda tup: tup[1], reverse = True)
 
-	print
 
+print(sortedCargolist1)
+# Recursively devide the cargo among the different spacecrafts for part B of the asignment
+def cargoRandom (cargolist1):
+
+	# create random number generator
+
+	#
 
 	# for cargo in sortedCargolist1:
 	# 	if cargo['location'] = locationList[4]:
 
+spaceLeft = {'Cygnus': 18.9, 'VerneATV': 13.1, 'Progress': 7.6, 'Kounotori': 14}
 
+def cargoLeastFullAircraft (sortedCargolist1):
 
+	# voor elk pakketje in de lijst
+	for cargo in sortedCargolist1:
 
+		# sorteer locatielijst op hoeveel plek er over is
+
+		# check of er genoeg plek is om het pakketje te plaatsen 
+		if spaceLeft[0] < cargo['kgs']:
+			print("Error")
+
+		# zet het pakketje in de minst volle aircraft
+		cargo['location'] = 
+
+		# update de locatie over van de aircraft
 
 
 

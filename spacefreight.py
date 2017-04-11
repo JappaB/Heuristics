@@ -9,6 +9,7 @@ Laurens vd Ziel (10653384)
 '''
 
 # Import packages
+import random
 import json
 import os
 from operator import itemgetter
@@ -41,13 +42,34 @@ def main():
 	sortedCargolist1 = sortDensity(cargolist1)
 
 	# Zet pakketjes in aircrafts
-	cargoLeastFullAircraft(sortedCargolist1)
+	#cargoLeastFullAircraft(sortedCargolist1)
+
+	# Shuffle the cargolist
+	cargoRandom (cargolist1)
 
 # Recursively devide the cargo among the different spacecrafts for part B of the asignment
-def cargoRandom (cargolist1):
+def cargoRandom (cargolist):
 
 	# create random number generator
-	print('TODO')
+	shuffledcargolist = cargolist
+
+	random.shuffle(shuffledcargolist)
+	for cargo in shuffledcargolist:
+		cargo['location'] = locationList[random.randint(0,3)]
+		print (cargo)
+
+	print(sum(cargo['kgs'] for cargo in shuffledcargolist))
+	print(sum(cargo['kgs'] for cargo in shuffledcargolist if cargo['location'] == 'Cygnus'))
+	print(sum(cargo['kgs'] for cargo in shuffledcargolist if cargo['location'] == 'Verne ATV'))
+	print(sum(cargo['kgs'] for cargo in shuffledcargolist if cargo['location'] == 'Progress'))
+	print(sum(cargo['kgs'] for cargo in shuffledcargolist if cargo['location'] == 'Kounotori'))
+
+	print(sum(cargo['m3'] for cargo in shuffledcargolist))
+	print(sum(cargo['m3'] for cargo in shuffledcargolist if cargo['location'] == 'Cygnus'))
+	print(sum(cargo['m3'] for cargo in shuffledcargolist if cargo['location'] == 'Verne ATV'))
+	print(sum(cargo['m3'] for cargo in shuffledcargolist if cargo['location'] == 'Progress'))
+	print(sum(cargo['m3'] for cargo in shuffledcargolist if cargo['location'] == 'Kounotori'))
+
 
 # Recursively devide the cargo among the different spacecrafts for part B of the asignment
 def sortDensity (cargolist):
@@ -58,38 +80,38 @@ def sortDensity (cargolist):
 	# return sorted list
 	return sortedCargolist1
 
-def cargoLeastFullAircraft (sortedCargolist1):
+#def cargoLeastFullAircraft (sortedCargolist1):
 
 	# make array for spaceleft
-	spaceLeft = {USA, Europe, Russia, Japan}
+	#spaceLeft = {USA, Europe, Russia, Japan}
 
 	# check
-	print(spaceLeft)
+	#print(spaceLeft)
 
 	# voor elk pakketje in de lijst
-	for cargo in sortedCargolist1:
+	#for cargo in sortedCargolist1:
 
 		# sorteer locatielijst op hoeveel plek er over is
-		spaceLeft = sorted(spaceLeft, key = lambda k: k['spaceleft'], reverse = True)
+		#spaceLeft = sorted(spaceLeft, key = lambda k: k['spaceleft'], reverse = True)
 
 		# check of er genoeg plek is om het pakketje te plaatsen 
-		if spaceLeft[0]['spaceleft'] < cargo['kgs']:
+		#if spaceLeft[0]['spaceleft'] < cargo['kgs']:
 
 			# check
-			print(spaceLeft)
-			print(cargo)
+			#print(spaceLeft)
+			#print(cargo)
 
 			# error!! moeten dan gaan ruilen
-			print("Error")
+			#print("Error")
 
 		# zet het pakketje in de minst volle aircraft
-		cargo['location'] = spaceLeft[0]['location']
+		#cargo['location'] = spaceLeft[0]['location']
 
 		# update de locatie over van de aircraft
-		spaceLeft[0]['spaceleft'] -= cargo['kgs']
+		#spaceLeft[0]['spaceleft'] -= cargo['kgs']
 
 		# check
-		print(cargo)
+		#print(cargo)
 
 if __name__ == '__main__':
 	main()

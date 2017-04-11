@@ -16,7 +16,7 @@ from operator import itemgetter
 # Misschien beter om classes te gebruiken in plaats van dicts?
 # Landen als variabele later en naam scpacecraft als naam dictionary
 locationList = ['Cygnus', 'Verne ATV', 'Progress', 'Kounotori', 'Ground']
-USA = {'location': locationList[0],'kg': 2000, 'm3': 18.9}
+USA = {'location': locationList[0],'kg': 2000, 'm3': 18.9};
 Europe = {'location': locationList[1],'kg': 2300 ,'m3': 13.1};
 Rusia = {'location': locationList[2],'kg': 2400,'m3': 7.6};
 Japan = {'location': locationList[3],'kg': 5200,'m3': 14};

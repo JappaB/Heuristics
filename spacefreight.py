@@ -47,7 +47,7 @@ def main():
 def cargoB (cargolist):
 
 	print("hoi")
-	# Sort bij density http://stackoverflow.com/questions/3121979/how-to-sort-list-tuple-of-lists-tuples
+	# Sort bij density http://stackoverflow.com/questions/72899/how-do-i-sort-a-list-of-dictionaries-by-values-of-the-dictionary-in-python
 	sortedCargolist1 = sorted(cargolist, key = lambda k: k['density'], reverse = True)
 
 	print(sortedCargolist1)

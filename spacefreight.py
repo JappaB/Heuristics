@@ -57,6 +57,7 @@ def cargoRandom (cargolist):
 	for cargo in shuffledcargolist:
 		cargo['location'] = locationList[random.randint(0,3)]
 		print (cargo)
+		print ('hoi')
 
 	print(sum(cargo['kgs'] for cargo in shuffledcargolist))
 	print(sum(cargo['kgs'] for cargo in shuffledcargolist if cargo['location'] == 'Cygnus'))

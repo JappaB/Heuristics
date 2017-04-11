@@ -86,9 +86,9 @@ def cargoMostDensityLeftAircraft (sortedCargolist1):
 		# sorteer locatielijst op hoeveel plek er over is
 		densLeft = sorted(densLeft, key = lambda k: k['densleft'], reverse = True)
 
-		for spacecraft in densLeft:
-			print spacecraft['densleft']
-		return 0
+		#for spacecraft in densLeft:
+		#	print spacecraft['densleft']
+		#return 0
 		#print("")
 		#print("densleft is")
 		#print densLeft[0]['densleft']
@@ -96,8 +96,17 @@ def cargoMostDensityLeftAircraft (sortedCargolist1):
 		#print cargo['kgs']
 
 		# check of er genoeg plek is om het pakketje te plaatsen 
-		if densLeft[0]['kgsleft'] < cargo['kgs'] or densLeft[0]['spaceleft'] < cargo['m3']:
+		if densLeft[0]['kgsleft'] >= cargo['kgs'] and densLeft[0]['spaceleft'] >= cargo['m3']:
 
+			# zet het pakketje in de minst volle aircraft
+			cargo['location'] = densLeft[0]['location']
+
+			# update de locatie over van de aircraft
+			densLeft[0]['kgsleft'] -= cargo['kgs']
+			densLeft[0]['spaceleft'] -= cargo['m3']
+			densLeft[0]['densleft'] = densLeft[0]['kgsleft']/densLeft[0]['spaceleft']
+
+		
 			print n
 			# check of het klopt
 			# for spacecraft in densLeft:
@@ -118,14 +127,6 @@ def cargoMostDensityLeftAircraft (sortedCargolist1):
 			print("Error")
 			return 0
 
-		# zet het pakketje in de minst volle aircraft
-		cargo['location'] = densLeft[0]['location']
-
-		# update de locatie over van de aircraft
-		densLeft[0]['kgsleft'] -= cargo['kgs']
-		densLeft[0]['spaceleft'] -= cargo['m3']
-		densLeft[0]['densleft'] = densLeft[0]['kgsleft']/densLeft[0]['spaceleft']
-
 		n += 1
 		# check
 		#print(cargo)
@@ -143,7 +144,7 @@ def cargoMostWeightLeftAircraft (sortedCargolist1):
 		kgsLeft = sorted(kgsLeft, key = lambda k: k['kgsleft'], reverse = True)
 		
 		# check of er genoeg plek is om het pakketje te plaatsen 
-		if kgsLeft[0]['kgsleft'] < cargo['kgs']:
+		if kgsLeft[0]['kgsleft'] > cargo['kgs']:
 
 			# Check wat er nog over is
 			for cargo in sortedCargolist1:

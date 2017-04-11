@@ -13,15 +13,15 @@ import json
 import os
 from operator import itemgetter
 
-def main():
+# Misschien beter om classes te gebruiken in plaats van dicts?
+# Landen als variabele later en naam scpacecraft als naam dictionary
+locationList = ['Cygnus', 'Verne ATV', 'Progress', 'Kounotori', 'Ground']
+USA = {'location': locationList[0],'kg': 2000, 'm3': 18.9, 'spaceleft': 18.9}
+Europe = {'location': locationList[1],'kg': 2300 ,'m3': 13.1, 'spaceleft': 13.1};
+Russia = {'location': locationList[2],'kg': 2400,'m3': 7.6, 'spaceleft': 7.6};
+Japan = {'location': locationList[3],'kg': 5200,'m3': 14, 'spaceleft': 14};
 
-	# Misschien beter om classes te gebruiken in plaats van dicts?
-	# Landen als variabele later en naam scpacecraft als naam dictionary
-	locationList = ['Cygnus', 'Verne ATV', 'Progress', 'Kounotori', 'Ground']
-	USA = {'location': locationList[0],'kg': 2000, 'm3': 18.9, 'spaceleft': 18.9}
-	Europe = {'location': locationList[1],'kg': 2300 ,'m3': 13.1, 'spaceleft': 13.1};
-	Russia = {'location': locationList[2],'kg': 2400,'m3': 7.6, 'spaceleft': 7.6};
-	Japan = {'location': locationList[3],'kg': 5200,'m3': 14, 'spaceleft': 14};
+def main():
 
 	# Import file 
 	# LET OP!! (misschien later nog even netjes 
@@ -38,7 +38,10 @@ def main():
 		cargo['density'] = (cargo['m3']/cargo['kgs'])
 
 	# Sort the cargolist on density
-	sortDensity(cargolist1)
+	sortedCargolist1 = sortDensity(cargolist1)
+
+	# Zet pakketjes in aircrafts
+	cargoLeastFullAircraft(sortedCargolist1)
 
 # Recursively devide the cargo among the different spacecrafts for part B of the asignment
 def cargoRandom (cargolist1):
@@ -52,8 +55,8 @@ def sortDensity (cargolist):
 	# Sort bij density http://stackoverflow.com/questions/72899/how-do-i-sort-a-list-of-dictionaries-by-values-of-the-dictionary-in-python
 	sortedCargolist1 = sorted(cargolist, key = lambda k: k['density'], reverse = True)
 	
-	for cargo in sortedCargolist1:
-		print(cargo)
+	# return sorted list
+	return sortedCargolist1
 
 def cargoLeastFullAircraft (sortedCargolist1):
 

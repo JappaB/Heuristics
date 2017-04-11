@@ -38,10 +38,12 @@ def main():
 		cargo['density'] = (cargo['kgs']/cargo['m3'])
 
 	# Sort the cargolist on density
-	# sortedCargolist1 = sortDensity(cargolist1)
+	sortedCargolist1 = sortDensity(cargolist1)
+	#for cargo in sortedCargolist1:
+	#	print cargo
 
 	# Sort the cargolist on weight
-	sortedCargolist1 = sortWeight(cargolist1)
+	#sortedCargolist1 = sortWeight(cargolist1)
 
 	# Zet pakketjes in aircrafts met most weight left
 	#cargoMostWeightLeftAircraft(sortedCargolist1)
@@ -50,10 +52,38 @@ def main():
 	cargoMostDensityLeftAircraft(sortedCargolist1)
 
 # Recursively devide the cargo among the different spacecrafts for part B of the asignment
-def cargoRandom (cargolist1):
+def cargoRandom (cargolist):
 
 	# create random number generator
-	print('TODO')
+	shuffledcargolist = cargolist
+
+		#sum_dimension_spacecarfts = [[0, 0], [0, 0], [0, 0], [0, 0]]
+
+	random.shuffle(shuffledcargolist)
+	for cargo in shuffledcargolist:
+
+		randomlocation = random.randint(0,3)
+		#while sumof kgs and sumof m3 in randomlocation > kgs and m3 in cargo:
+			#randomlocation = random.randint(0,3)
+
+		cargo['location'] = locationList[randomlocation]
+
+		print (cargo)
+
+
+	print(sum(cargo['kgs'] for cargo in shuffledcargolist))
+	print(sum(cargo['kgs'] for cargo in shuffledcargolist if cargo['location'] == 'Cygnus'))
+	print(sum(cargo['kgs'] for cargo in shuffledcargolist if cargo['location'] == 'Verne ATV'))
+	print(sum(cargo['kgs'] for cargo in shuffledcargolist if cargo['location'] == 'Progress'))
+	print(sum(cargo['kgs'] for cargo in shuffledcargolist if cargo['location'] == 'Kounotori'))
+
+	print(sum(cargo['m3'] for cargo in shuffledcargolist))
+	print(sum(cargo['m3'] for cargo in shuffledcargolist if cargo['location'] == 'Cygnus'))
+	print(sum(cargo['m3'] for cargo in shuffledcargolist if cargo['location'] == 'Verne ATV'))
+	print(sum(cargo['m3'] for cargo in shuffledcargolist if cargo['location'] == 'Progress'))
+	print(sum(cargo['m3'] for cargo in shuffledcargolist if cargo['location'] == 'Kounotori'))
+
+	# create random number generator
 
 # Sort on density
 def sortDensity (cargolist):
@@ -79,57 +109,60 @@ def cargoMostDensityLeftAircraft (sortedCargolist1):
 	# make array for spaceleft
 	densLeft = [USA, Europe, Russia, Japan]
 
-	n = 0
 	# voor elk pakketje in de lijst
 	for cargo in sortedCargolist1:
 
 		# sorteer locatielijst op hoeveel plek er over is
 		densLeft = sorted(densLeft, key = lambda k: k['densleft'], reverse = True)
 
-		#for spacecraft in densLeft:
-		#	print spacecraft['densleft']
-		#return 0
-		#print("")
-		#print("densleft is")
-		#print densLeft[0]['densleft']
-		#print("cargo {} densleft is".format(cargo['id']))
-		#print cargo['kgs']
-
 		# check of er genoeg plek is om het pakketje te plaatsen 
 		if densLeft[0]['kgsleft'] >= cargo['kgs'] and densLeft[0]['spaceleft'] >= cargo['m3']:
 
 			# zet het pakketje in de minst volle aircraft
-			cargo['location'] = densLeft[0]['location']
+			cargo['location'] = densLeft[i]['location']
 
 			# update de locatie over van de aircraft
 			densLeft[0]['kgsleft'] -= cargo['kgs']
 			densLeft[0]['spaceleft'] -= cargo['m3']
 			densLeft[0]['densleft'] = densLeft[0]['kgsleft']/densLeft[0]['spaceleft']
 
-		
-			print n
-			# check of het klopt
-			# for spacecraft in densLeft:
-			# 	print spacecraft['densleft']
-			# print("")
-			# print(cargo['density'])
+		elif densLeft[1]['kgsleft'] >= cargo['kgs'] and densLeft[1]['spaceleft'] >= cargo['m3']:
 
-			i = 0
-			# Check wat er nog over is
-			for cargo in sortedCargolist1:
-				if cargo['location'] is 'Ground':
-					i += 1
-					# print("cargo {} densleft is".format(cargo['id']))
-					# print(cargo['kgs'])
-					# print(cargo['m3'])
-			# error!! moeten dan gaan ruilen
-			print i
-			print("Error")
-			return 0
+			# zet het pakketje in de minst volle aircraft
+			cargo['location'] = densLeft[i]['location']
 
-		n += 1
-		# check
-		#print(cargo)
+			# update de locatie over van de aircraft
+			densLeft[1]['kgsleft'] -= cargo['kgs']
+			densLeft[1]['spaceleft'] -= cargo['m3']
+			densLeft[1]['densleft'] = densLeft[1]['kgsleft']/densLeft[1]['spaceleft']
+
+		for i in range(3):
+			if densLeft[i]['kgsleft'] >= cargo['kgs'] and densLeft[i]['spaceleft'] >= cargo['m3']:
+
+				# zet het pakketje in de minst volle aircraft
+				cargo['location'] = densLeft[i]['location']
+
+				# update de locatie over van de aircraft
+				densLeft[i]['kgsleft'] -= cargo['kgs']
+				densLeft[i]['spaceleft'] -= cargo['m3']
+				densLeft[i]['densleft'] = densLeft[i]['kgsleft']/densLeft[i]['spaceleft']
+
+				# ALS IN IFLOOP DAN NAAR NIEUW PAKKET
+
+		# BEGINNEN MET RUILEN
+
+		i = 0
+		# Check wat er nog over is
+		for cargo in sortedCargolist1:
+			if cargo['location'] is 'Ground':
+				i += 1
+				# print("cargo {} densleft is".format(cargo['id']))
+				# print(cargo['kgs'])
+				# print(cargo['m3'])
+		# error!! moeten dan gaan ruilen
+		print i
+		print("Error VAN SANNE")
+		return 0
 
 # Algoritme om pakketjes in te pakken aan de hand van most weight left
 def cargoMostWeightLeftAircraft (sortedCargolist1):
@@ -144,8 +177,16 @@ def cargoMostWeightLeftAircraft (sortedCargolist1):
 		kgsLeft = sorted(kgsLeft, key = lambda k: k['kgsleft'], reverse = True)
 		
 		# check of er genoeg plek is om het pakketje te plaatsen 
-		if kgsLeft[0]['kgsleft'] > cargo['kgs']:
+		if kgsLeft[0]['kgsleft'] >= cargo['kgs']:
 
+			# zet het pakketje in de minst volle aircraft
+			cargo['location'] = kgsLeft[0]['location']
+
+			# update de locatie over van de aircraft
+			kgsLeft[0]['kgsleft'] -= cargo['kgs']
+
+		# RUILEN
+		else:	
 			# Check wat er nog over is
 			for cargo in sortedCargolist1:
 				if cargo['location'] is 'Ground':
@@ -153,14 +194,8 @@ def cargoMostWeightLeftAircraft (sortedCargolist1):
 					print(cargo['kgs'])
 		
 			# error!! moeten dan gaan ruilen
-			print("Error")
+			print("Error VAN SANNE")
 			return 0
-
-		# zet het pakketje in de minst volle aircraft
-		cargo['location'] = kgsLeft[0]['location']
-
-		# update de locatie over van de aircraft
-		kgsLeft[0]['kgsleft'] -= cargo['kgs']
 
 if __name__ == '__main__':
 	main()

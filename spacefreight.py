@@ -9,6 +9,7 @@ Laurens vd Ziel (10653384)
 '''
 
 # Import packages
+import random
 import json
 import os
 from operator import itemgetter
@@ -20,6 +21,8 @@ USA = {'location': locationList[0],'kgs': 2000, 'm3': 18.9, 'density': 2000/18.9
 Europe = {'location': locationList[1],'kgs': 2300 ,'m3': 13.1, 'density': 2300/13.1, 'spaceleft': 13.1, 'kgsleft': 2300, 'densleft': 2300/13.1};
 Russia = {'location': locationList[2],'kgs': 2400,'m3': 7.6, 'density': 2400/7.6, 'spaceleft': 7.6, 'kgsleft': 2400, 'densleft': 2400/7.6};
 Japan = {'location': locationList[3],'kgs': 5200,'m3': 14, 'density': 5200/14, 'spaceleft': 14, 'kgsleft': 5200, 'densleft': 5200/14};
+
+densLeft = [USA, Europe, Russia, Japan]
 
 def main():
 
@@ -37,51 +40,55 @@ def main():
 		# kg/m2 ratio berekenen voor alles in de cargolist
 		cargo['density'] = (cargo['kgs']/cargo['m3'])
 
-	# Sort the cargolist on density
-	sortedCargolist1 = sortDensity(cargolist1)
-	#for cargo in sortedCargolist1:
-	#	print cargo
+	
+	###ALGORITHMS###
+	# Zet pakketjes in spacecrafts randomly
+	#cargoRandom(cargolist1)
 
-	# Sort the cargolist on weight
-	#sortedCargolist1 = sortWeight(cargolist1)
+	# Zet pakketjes in spacecrafts met most weight left
+	#cargoMostWeightLeftAircraft(cargolist1)
 
-	# Zet pakketjes in aircrafts met most weight left
-	#cargoMostWeightLeftAircraft(sortedCargolist1)
+	# Zet pakketjes in spacecrafts met most density left
+	cargoMostDensityLeftAircraft(cargolist1)
 
-	# Zet pakketjes in aircrafts met most density left
-	cargoMostDensityLeftAircraft(sortedCargolist1)
+
+	###INFO###
+	# information on the empty space and weight of the spacecrafts
+	infocapacity()
+
+	# cargo on the ground depending on which algorithm is used and which cargolist is packed
+	cargoground(cargolist1)
 
 # Recursively devide the cargo among the different spacecrafts for part B of the asignment
 def cargoRandom (cargolist):
 
+	densLeft = [USA, Europe, Russia, Japan]
 	# create random number generator
 	shuffledcargolist = cargolist
 
-		#sum_dimension_spacecarfts = [[0, 0], [0, 0], [0, 0], [0, 0]]
-
 	random.shuffle(shuffledcargolist)
+	
 	for cargo in shuffledcargolist:
 
-		randomlocation = random.randint(0,3)
-		#while sumof kgs and sumof m3 in randomlocation > kgs and m3 in cargo:
-			#randomlocation = random.randint(0,3)
+		listnum = [0, 1, 2, 3]
+		random.shuffle(listnum)
 
-		cargo['location'] = locationList[randomlocation]
+		for elements in listnum:
 
-		print (cargo)
+			if densLeft[elements]['kgsleft'] >= cargo['kgs'] and densLeft[elements]['spaceleft'] >= cargo['m3']:
+				cargo['location'] = locationList[elements]
+				# update de locatie over van de aircraft
+				densLeft[elements]['kgsleft'] -= cargo['kgs']
+				densLeft[elements]['spaceleft'] -= cargo['m3']
+				densLeft[elements]['densleft'] = densLeft[elements]['kgsleft']/densLeft[elements]['spaceleft']
+				break
 
 
-	print(sum(cargo['kgs'] for cargo in shuffledcargolist))
-	print(sum(cargo['kgs'] for cargo in shuffledcargolist if cargo['location'] == 'Cygnus'))
-	print(sum(cargo['kgs'] for cargo in shuffledcargolist if cargo['location'] == 'Verne ATV'))
-	print(sum(cargo['kgs'] for cargo in shuffledcargolist if cargo['location'] == 'Progress'))
-	print(sum(cargo['kgs'] for cargo in shuffledcargolist if cargo['location'] == 'Kounotori'))
 
-	print(sum(cargo['m3'] for cargo in shuffledcargolist))
-	print(sum(cargo['m3'] for cargo in shuffledcargolist if cargo['location'] == 'Cygnus'))
-	print(sum(cargo['m3'] for cargo in shuffledcargolist if cargo['location'] == 'Verne ATV'))
-	print(sum(cargo['m3'] for cargo in shuffledcargolist if cargo['location'] == 'Progress'))
-	print(sum(cargo['m3'] for cargo in shuffledcargolist if cargo['location'] == 'Kounotori'))
+	return shuffledcargolist
+
+
+
 
 	# create random number generator
 
@@ -89,140 +96,125 @@ def cargoRandom (cargolist):
 def sortDensity (cargolist):
 	
 	# Sort bij density http://stackoverflow.com/questions/72899/how-do-i-sort-a-list-of-dictionaries-by-values-of-the-dictionary-in-python
-	sortedCargolist1 = sorted(cargolist, key = lambda k: k['density'], reverse = True)
+	sortedCargolist = sorted(cargolist, key = lambda k: k['density'], reverse = True)
 	
 	# return sorted list
-	return sortedCargolist1
+	return sortedCargolist
 
 # Sort on density
 def sortWeight (cargolist):
 	
 	# Sort by weight http://stackoverflow.com/questions/72899/how-do-i-sort-a-list-of-dictionaries-by-values-of-the-dictionary-in-python
-	sortedCargolist1 = sorted(cargolist, key = lambda k: k['kgs'], reverse = True)
+	sortedCargolist = sorted(cargolist, key = lambda k: k['kgs'], reverse = True)
 	
 	# return sorted list
-	return sortedCargolist1
+	return sortedCargolist
 
 # Algoritme om pakketjes in te pakken aan de hand van most density left
-def cargoMostDensityLeftAircraft (sortedCargolist1):
+def cargoMostDensityLeftAircraft (cargolist):
 
-	# make array for spaceleft
 	densLeft = [USA, Europe, Russia, Japan]
-
+	
 	# voor elk pakketje in de lijst
-	for cargo in sortedCargolist1:
+	for cargo in sortDensity(cargolist):
 
-		# sorteer locatielijst op hoeveel plek er over is
+		# sorteer locatielijst op density van de capaciteit die over is
 		densLeft = sorted(densLeft, key = lambda k: k['densleft'], reverse = True)
+		
+		spacecrafts = [0, 1, 2, 3]
 
-		# check of er genoeg plek is om het pakketje te plaatsen 
-		if densLeft[0]['kgsleft'] >= cargo['kgs'] and densLeft[0]['spaceleft'] >= cargo['m3']:
+		for spacecraft in spacecrafts:
 
-			# zet het pakketje in de minst volle aircraft
-			cargo['location'] = densLeft[0]['location']
+			# check of er genoeg plek is om het pakketje te plaatsen 
+			if densLeft[spacecraft]['kgsleft'] >= cargo['kgs'] and densLeft[spacecraft]['spaceleft'] >= cargo['m3']:
 
-			# update de locatie over van de aircraft
-			densLeft[0]['kgsleft'] -= cargo['kgs']
-			densLeft[0]['spaceleft'] -= cargo['m3']
-			densLeft[0]['densleft'] = densLeft[0]['kgsleft']/densLeft[0]['spaceleft']
+				# zet het pakketje in de minst volle spacecrafts
+				cargo['location'] = densLeft[spacecraft]['location']
 
-		elif densLeft[1]['kgsleft'] >= cargo['kgs'] and densLeft[1]['spaceleft'] >= cargo['m3']:
+				# update de locatie over van de spacecrafts
+				densLeft[spacecraft]['kgsleft'] -= cargo['kgs']
+				densLeft[spacecraft]['spaceleft'] -= cargo['m3']
+				densLeft[spacecraft]['densleft'] = densLeft[spacecraft]['kgsleft']/densLeft[spacecraft]['spaceleft']
+				break
 
-			# zet het pakketje in de minst volle aircraft
-			cargo['location'] = densLeft[1]['location']
-
-			# update de locatie over van de aircraft
-			densLeft[1]['kgsleft'] -= cargo['kgs']
-			densLeft[1]['spaceleft'] -= cargo['m3']
-			densLeft[1]['densleft'] = densLeft[1]['kgsleft']/densLeft[1]['spaceleft']
-
-		elif densLeft[2]['kgsleft'] >= cargo['kgs'] and densLeft[2]['spaceleft'] >= cargo['m3']:
-
-			# zet het pakketje in de minst volle aircraft
-			cargo['location'] = densLeft[2]['location']
-
-			# update de locatie over van de aircraft
-			densLeft[2]['kgsleft'] -= cargo['kgs']
-			densLeft[2]['spaceleft'] -= cargo['m3']
-			densLeft[2]['densleft'] = densLeft[2]['kgsleft']/densLeft[2]['spaceleft']
-
-		elif densLeft[3]['kgsleft'] >= cargo['kgs'] and densLeft[3]['spaceleft'] >= cargo['m3']:
-
-			# zet het pakketje in de minst volle aircraft
-			cargo['location'] = densLeft[3]['location']
-
-			# update de locatie over van de aircraft
-			densLeft[3]['kgsleft'] -= cargo['kgs']
-			densLeft[3]['spaceleft'] -= cargo['m3']
-			densLeft[3]['densleft'] = densLeft[3]['kgsleft']/densLeft[3]['spaceleft']
-
+		
 		# for i in range(3):
 		# 	if densLeft[i]['kgsleft'] >= cargo['kgs'] and densLeft[i]['spaceleft'] >= cargo['m3']:
 
-		# 		# zet het pakketje in de minst volle aircraft
+		# 		# zet het pakketje in de minst volle spacecrafts
 		# 		cargo['location'] = densLeft[i]['location']
 
-		# 		# update de locatie over van de aircraft
+		# 		# update de locatie over van de spacecrafts
 		# 		densLeft[i]['kgsleft'] -= cargo['kgs']
 		# 		densLeft[i]['spaceleft'] -= cargo['m3']
 		# 		densLeft[i]['densleft'] = densLeft[i]['kgsleft']/densLeft[i]['spaceleft']
 
 		# 		# ALS IN IFLOOP DAN NAAR NIEUW PAKKET
 
+def infocapacity ():
 	# BEGINNEN MET RUILEN, op deze regel?
-	for aircraft in densLeft:
-		print("")
-		print("location")
-		print(aircraft['location'])
+	print("\nBEGIN INFO CAPACITEIT OVER\n")
+	for spacecrafts in densLeft:
+		print(spacecrafts['location'])
 		print("kgsleft")
-		print(aircraft['kgsleft'])
+		print(spacecrafts['kgsleft'])
 		print("spaceleft")
-		print(aircraft['spaceleft'])
+		print(spacecrafts['spaceleft'])
 		print("")
+	print("EINDE\n")
+
+def cargoground (cargolist):
+
+	print("BEGIN INFO CARGO GROND\n")
 	
-	i = 0
+	n_cargo_ground = 0
+	kg_cargo_ground = 0
+	m3_cargo_ground = 0
 	# Check wat er nog over is
-	for cargo in sortedCargolist1:
+	for cargo in cargolist:
 		if cargo['location'] is 'Ground':
-			i += 1
+			n_cargo_ground += 1
+			kg_cargo_ground += cargo['kgs']
+			m3_cargo_ground += cargo['m3']
 			print("cargo {}".format(cargo['id']))
-			print(cargo['kgs'])
-			print(cargo['m3'])
-			print("")
+			print("kilo's: {}".format(cargo['kgs']))
+			print("kubieke meters {}\n\n".format(cargo['m3']))
+			
 	# error!! moeten dan gaan ruilen
-	print("")
-	print("Pakketjes over")
-	print i
-	print("TODO RUILEN")
+	print("Pakketjes over: {}".format(n_cargo_ground))
+	print("Totaal kilogrammen grond: {}".format(kg_cargo_ground))
+	print("Totaal kubieke meters grond: {}\n".format(m3_cargo_ground))
+	
+	print("EINDE\n")
 
 # Algoritme om pakketjes in te pakken aan de hand van most weight left
-def cargoMostWeightLeftAircraft (sortedCargolist1):
+def cargoMostWeightLeftAircraft (cargolist):
 
 	# make array for spaceleft
 	kgsLeft = [USA, Europe, Russia, Japan]
 
 	# voor elk pakketje in de lijst
-	for cargo in sortedCargolist1:
+	for cargo in sortWeight(cargolist):
 
-		# sorteer locatielijst op hoeveel plek er over is
+		# sorteer locatielijst op gewichtscapaciteit er over is
 		kgsLeft = sorted(kgsLeft, key = lambda k: k['kgsleft'], reverse = True)
+		
 		
 		# check of er genoeg plek is om het pakketje te plaatsen 
 		if kgsLeft[0]['kgsleft'] >= cargo['kgs']:
 
-			# zet het pakketje in de minst volle aircraft
+			# zet het pakketje in de minst volle spacecrafts
 			cargo['location'] = kgsLeft[0]['location']
 
-			# update de locatie over van de aircraft
+			# update de locatie over van de spacecrafts
 			kgsLeft[0]['kgsleft'] -= cargo['kgs']
 
 		# RUILEN
 		else:	
 			# Check wat er nog over is
-			for cargo in sortedCargolist1:
+			for cargo in sortWeight(cargolist):
 				if cargo['location'] is 'Ground':
-					print("cargo {} kgsleft is".format(cargo['id']))
-					print(cargo['kgs'])
+					print("cargo {}, kgsleft is {}".format(cargo['id'], cargo['kgs']))
 		
 			# error!! moeten dan gaan ruilen
 			print("Error VAN SANNE")

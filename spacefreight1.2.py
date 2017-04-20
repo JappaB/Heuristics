@@ -27,30 +27,30 @@ class Spacecraft(object):
 	def __init__(self, name, spaceleft, kgsleft, density, country):
 		self.name = name
 		self.spaceleft = spaceleft
-	 	self.kgsleft = kgsleft
-	 	self.density = kgsleft / spaceleft
-	 	self.country = country
+		self.kgsleft = kgsleft
+		self.density = kgsleft / spaceleft
+		self.country = country
 
 	def displaySpacecraft(self):
-	 	print "name: ", self.name, ", Spaceleft: ", self.spaceleft, ", Kgsleft: ", self.kgsleft, ", Densityleft: ", self.density, ", Coutry: ", self.country
+		print ("name: ", self.name, ", Spaceleft: ", self.spaceleft, ", Kgsleft: ", self.kgsleft, ", Densityleft: ", self.density, ", Coutry: ", self.country)
 
 class Cygnus(Spacecraft):
 
 	#name = 'Cygnus'
 	def __init__(self, name='Cygnus', spaceleft=18.9, kgsleft=2000, density=0, country='USA'):
-	 	Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
+		Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
 
 class VerneATV(Spacecraft):
 
 	#name = 'Cygnus'
 	def __init__(self, name='VerneATV', spaceleft=13.1, kgsleft=2300, density=0, country='Europe'):
-	 	Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
+		Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
 
 class Progress(Spacecraft):
 
 	#name = 'Cygnus'
 	def __init__(self, name='Progress', spaceleft=7.6, kgsleft=2400, density=0, country='Russia'):
-	 	Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
+		Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
 
 class Kounotori(Spacecraft):
 
@@ -59,6 +59,7 @@ class Kounotori(Spacecraft):
 	 	Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
 
 def main():
+
 	# Make spacecrafts
 	Cygnus1 = Cygnus()
 	Spacecrafts_list.append(Cygnus1)
@@ -106,33 +107,10 @@ def cargoOnlyWeightLeftAircraft (cargolist):
 		# sorteer locatielijst op gewichtscapaciteit er over is
 		Spacecrafts_list.sort(key = lambda k: k.kgsleft, reverse = True)
 	
-		for Spacecraft in Spacecrafts_list:
+		# if possible, put cargo in spacecraft following a given order
+		putCargoinSpacecraftinthefollowingOrder(cargo, Spacecrafts_list)
 
-			# check of er genoeg plek is om het pakketje te plaatsen
-			if spacecraft.kgsleft >= cargo['kgs']:
 
-				# zet het pakketje in de minst volle spacecrafts
-				cargo['location'] = spacecraft.country
-
-				# update de locatie over van de spacecrafts
-				spacecraft.kgsleft -= cargo['kgs']
-				spacecraft.spaceleft -= cargo['m3']
-				break
-
-def putCargoinSpacecraftinthefollowingOrder (cargo, Spacecrafts_list): 
-
-	for spacecraft in Spacecrafts_list:
-
-		# check of er genoeg plek is om het pakketje te plaatsen 
-		if spacecraft.kgsleft >= cargo['kgs'] and spacecraft.spaceleft >= cargo['m3']:
-
-			# zet het pakketje in de minst volle spacecrafts
-			cargo['location'] = spacecraft.country
-
-			# update de locatie over van de spacecrafts
-			spacecraft.kgsleft -= cargo['kgs']
-			spacecraft.spaceleft -= cargo['m3']
-			break
 
 # Algorithm to pack cargolist on most density left
 def cargoMostDensityLeftAircraft (cargolist):
@@ -155,6 +133,21 @@ def cargoRandom (cargolist):
 
 		# if possible, put cargo in spacecraft following a given order
 		putCargoinSpacecraftinthefollowingOrder(cargo, Spacecrafts_list)
+
+def putCargoinSpacecraftinthefollowingOrder (cargo, Spacecrafts_list): 
+
+	for spacecraft in Spacecrafts_list:
+
+		# check of er genoeg plek is om het pakketje te plaatsen 
+		if spacecraft.kgsleft >= cargo['kgs'] and spacecraft.spaceleft >= cargo['m3']:
+
+			# zet het pakketje in de minst volle spacecrafts
+			cargo['location'] = spacecraft.country
+
+			# update de locatie over van de spacecrafts
+			spacecraft.kgsleft -= cargo['kgs']
+			spacecraft.spaceleft -= cargo['m3']
+			break
 
 ### RUN PROGRAM ###
 if __name__ == '__main__':

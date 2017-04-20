@@ -12,113 +12,47 @@ Laurens vd Ziel (10653384)
 import random
 import json
 import os
-from operator import itemgetter
+import operator 
 
 # Create classes for spacecrafts
 # is dat 'object nodig'? in class Spacecraft (object)
 class Spacecraft(object):
 
-	# 
-
 	# Lukt niet om dit goed over te dragen op de children classes
 
-	# def __init__(self):
-	# 	self.density = (self.kgs/self.m3)
-	# 	self.cargo = []
-	# 	self.spaceleft = self.m3
-	# 	self.kgsleft = self.kgs
-	# 	self.densityleft = density
+	def __init__(self, name, initspace, spaceleft, kgsleft, density, country):
+		self.name = name
+		self.spaceleft = spaceleft
+		self.kgsleft = kgsleft
+		self.density = kgsleft / spaceleft
+		self.country = country
 
-	#status
-	def status(self):
-		print ("This is the: \n")
-		print (self.name)
-		print("kgsleft")
-		print(self.kgsleft)
-		print("spaceleft")
-		print(self.spaceleft)
-		print("densityleft")
-		print(self.densityleft)
-		print("einde status van")
-		print (self.name)
-
-	# Add cargo item to spacecraft
-	def append(self, cargo):
-		if self.kgsleft >= cargo["kgs"] and self.spaceleft >= cargo["m3"]:
-			self.cargo.append(cargo["id"])
-			self.kgsleft -= cargo['kgs']
-			self.spaceleft -= cargo['m3']
-			self.densityleft = (self.kgs/self.m3)
-		else:
-			print("cargo {} doesn't fit in {}".format(cargo['id'], self.name))
-
-	# Remove cargo item to spacecraft
-	def remove(self, cargo):
-		# remove removes first  occurrence of element in list (http://stackoverflow.com/questions/2793324/is-there-a-simple-way-to-delete-a-list-element-by-value)
-		self.cargo.remove(cargo["id"])
-		self.kgs += cargo['kgs']
-		self.speaceleft += cargo['m3']
-		self.densityleft = (self.kgs/self.m3)
-
-		# cargolist => location = ground
-
+	def displaySpacecraft(self):
+		print ("name: ", self.name, ", Spaceleft: ", self.spaceleft, ", Kgsleft: ", self.kgsleft, ", Densityleft: ", self.density, ", Coutry: ", self.country)
 
 class Cygnus(Spacecraft):
 
-	 #http://stackoverflow.com/questions/5166473/inheritance-and-init-method-in-python
-	def __init__(self):
-		#Spacecraft.__init__(self, Spacecraft)
-		self.name = "Cygnus"
-		self.country = "USA"
-		self.kgs = 2000
-		self.m3 = 18.9
-		self.kgsleft = self.kgs
-		self.density = (self.kgs/self.m3)
-		self.cargo = []
-		self.spaceleft = self.m3
-		self.kgsleft = self.kgs
-		self.densityleft = self.density
+	#name = 'Cygnus'
+	def __init__(self, name='Cygnus', spaceleft=18.9, kgsleft=2000, density=0, country='USA'):
+		Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
 
 class VerneATV(Spacecraft):
 
-	def __init__(self):
-		self.name = "Verne ATV"
-		self.country = "Europe"
-		self.kgs = 2300
-		self.m3 = 13.1
-		self.density = (self.kgs/self.m3)
-		self.cargo = []
-		self.spaceleft = self.m3
-		self.kgsleft = self.kgs
-		self.densityleft = self.density
+	#name = 'Cygnus'
+	def __init__(self, name='VerneATV', spaceleft=13.1, kgsleft=2300, density=0, country='Europe'):
+		Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
 
 class Progress(Spacecraft):
 
-	def __init__(self):
-		self.name = "Progress"
-		self.country = "Russia"
-		self.kgs = 2400
-		self.m3 = 7.6
-		self.density = (self.kgs/self.m3)
-		self.cargo = []
-		self.spaceleft = self.m3
-		self.kgsleft = self.kgs
-		self.densityleft = self.density
+	#name = 'Cygnus'
+	def __init__(self, name='Progress', spaceleft=7.6, kgsleft=2400, density=0, country='Russia'):
+		Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
 
 class Kounotori(Spacecraft):
 
-	def __init__(self):
-		self.name = "Kounotori"
-		self.country = "Japan"
-		self.kgs = 5200
-		self.m3 = 14
-		self.density = (self.kgs/self.m3)
-		self.cargo = []
-		self.spaceleft = self.m3
-		self.kgsleft = self.kgs
-		self.densityleft = self.density
-
-
+	#name = 'Cygnus'
+	def __init__(self, name='Kounotori', spaceleft=14, kgsleft=5200, density=0, country='Japan'):
+		Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
 locationList = ['Cygnus', 'VerneATV', 'Progress', 'Kounotori', 'Ground']
 spacecraftList = []
 
@@ -141,18 +75,31 @@ def main():
 
 	# http://stackoverflow.com/questions/25985566/how-to-sort-a-list-of-objects-based-on-different-object-values-in-python
 
+	# Create spacecrafts
 
-	cygnus1 = Cygnus()
-	verneATV1 = VerneATV() 
-	spacecraftList.append(cygnus1)
-	spacecraftList.append(verneATV1)
-	print (spacecraftList)
-	# print(cygnus1.status())
-	# print (type(cargolist1))
-	# print (type(cargolist1[0]))
-	# cygnus1.append(cargolist1[0])
-	# print(cygnus1.status())
+	Cygnus1 = Cygnus()
+	VerneATV1 = VerneATV()
+	Progress1 = Progress()
+	Kounotori1 = Kounotori()
 
+	print(Cygnus1.spaceleft)
+
+
+	spacecraftList.extend((Cygnus1, VerneATV1, Progress1, Kounotori1))
+	print(spacecraftList)
+
+	# lambda http://stackoverflow.com/questions/8966538/syntax-behind-sortedkey-lambda
+	spacecraftList.sort(key =lambda x: x.kgsleft, reverse = True)
+
+	print(spacecraftList)
+
+	spacecraftList.sort(key =lambda x: x.spaceleft, reverse = True)
+
+	print(spacecraftList)
+
+	spacecraftList.sort(key =lambda x: x.density, reverse = True)
+
+	print(spacecraftList)
 
 	### SORT CARGOLIST ###
 	# Unpack
@@ -183,7 +130,7 @@ def main():
 
 	### PRINT INFO ###
 	# information on the empty space and weight of the spacecrafts
-	infoCapacity()
+	#infoCapacity()
 
 	# information on the cargo on the ground
 	# depending on which algorithm is used and which cargolist is packed
@@ -195,23 +142,23 @@ def main():
 
 ### FUNCTIONS ###
 # Recursively devide the cargo among the different spacecrafts for part B of the asignment
-def cargoRandom (cargolist):
+# def cargoRandom (cargolist):
 
-	for cargo in cargolist:
+# 	for cargo in cargolist:
 
-		listnum = [0, 1, 2, 3]
-		random.shuffle(listnum)
+# 		listnum = [0, 1, 2, 3]
+# 		random.shuffle(listnum)
 
-		for elements in listnum:
+# 		for elements in listnum:
 
-			if countries[elements]['kgsleft'] >= cargo['kgs'] and countries[elements]['spaceleft'] >= cargo['m3']:
-				cargo['location'] = locationList[elements]
+# 			if countries[elements]['kgsleft'] >= cargo['kgs'] and countries[elements]['spaceleft'] >= cargo['m3']:
+# 				cargo['location'] = locationList[elements]
 				
-				# update de locatie over van de aircraft
-				countries[elements]['kgsleft'] -= cargo['kgs']
-				countries[elements]['spaceleft'] -= cargo['m3']
-				countries[elements]['densleft'] = countries[elements]['kgsleft']/countries[elements]['spaceleft']
-				break
+# 				# update de locatie over van de aircraft
+# 				countries[elements]['kgsleft'] -= cargo['kgs']
+# 				countries[elements]['spaceleft'] -= cargo['m3']
+# 				countries[elements]['densleft'] = countries[elements]['kgsleft']/countries[elements]['spaceleft']
+# 				break
 
 # Set all packages back on ground
 def unpack (cargolist):
@@ -222,24 +169,24 @@ def unpack (cargolist):
 	return cargolist
 
 # Sort random
-def sortRandom (cargolist):
+# def sortRandom (cargolist):
 	
-	# create random number generator
-	shuffledCargolist = cargolist
+# 	# create random number generator
+# 	shuffledCargolist = cargolist
 
-	random.shuffle(shuffledCargolist)
+# 	random.shuffle(shuffledCargolist)
 
-	# return random list
-	return shuffledCargolist
+# 	# return random list
+# 	return shuffledCargolist
 
 # Sort on density
-def sortDensity (cargolist):
+# def sortDensity (cargolist):
 	
-	# Sort bij density http://stackoverflow.com/questions/72899/how-do-i-sort-a-list-of-dictionaries-by-values-of-the-dictionary-in-python
-	sortedCargolist = sorted(cargolist, key = lambda k: k['density'], reverse = True)
+# 	# Sort bij density http://stackoverflow.com/questions/72899/how-do-i-sort-a-list-of-dictionaries-by-values-of-the-dictionary-in-python
+# 	sortedCargolist = sorted(cargolist, key = lambda k: k['density'], reverse = True)
 	
-	# return sorted list
-	return sortedCargolist
+# 	# return sorted list
+# 	return sortedCargolist
 
 # Sort on weight
 def sortWeight (cargolist):
@@ -253,22 +200,14 @@ def sortWeight (cargolist):
 # Algorithm to pack cargolist on most density left
 def cargoMostDensityLeftAircraft (cargolist):
 
-	# hou informatie bij van de aircrafts
-	densLeft = locationList
-	
 	# voor elk pakketje in de lijst
 
 	# Sorteer de spacecrafts op density
 
 	for cargo in cargolist:
-		#http://stackoverflow.com/questions/2688079/how-to-iterate-over-the-first-n-elements-of-a-list
-		for spacecraft in locationList[:4]:
-			sorted
-			
-		# sorteer locatielijst op density van de capaciteit die over is
-		densLeft = sorted(densLeft, key = lambda k: k['densleft'], reverse = True)
+		# use sort ipv sorted => sorted returns new array http://stackoverflow.com/questions/2338531/python-sorting-a-list-of-objects
+		spacecraftList.sort(key =lambda x: x.density, reverse = True)
 		
-		spacecrafts = range(4)
 		for spacecraft in spacecrafts:
 
 			# check of er genoeg plek is om het pakketje te plaatsen 
@@ -283,7 +222,7 @@ def cargoMostDensityLeftAircraft (cargolist):
 				densLeft[spacecraft]['densleft'] = densLeft[spacecraft]['kgsleft']/densLeft[spacecraft]['spaceleft']
 				break
 
-		# RUILEN
+		# RUILEN HC -> SA
 
 # Check if there is a package that fits precisely in one of the aircrafts
 def fitPrecisely (cargolist):

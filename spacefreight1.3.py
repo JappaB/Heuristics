@@ -19,11 +19,12 @@ import information as inf
 
 
 # Global variables
-# Declare list with spacecraft names (as objects)
-spacecraftsList = []
-# Number of iterations for HC and SA algorithm
+# Declare dict with spacecraft names (as objects)
+spacecraftsDict = {}
+# Comment: pas hier aan hoeveel iteraties je HC of SA wilt laten doen Number of iterations for HC and SA algorithm
 ITERATIONS = 5
-# List to remember the various configurations of the HC and SA algorithm
+# comment : wilde onderstaande gebruiken om te meten hoe goed het ging, maar na me een klein beetje verdiept te hebben in logging denk ik dat dat slimmer is.
+#List to remember the various configurations of the HC and SA algorithm
 m3OnGroundList = []
 
 
@@ -69,17 +70,19 @@ class Kounotori(Spacecraft):
 def main():
 
 
-	setupLogging()
+	# setupLogging()
 
 	# Make spacecrafts
 	Cygnus1 = Cygnus()
-	spacecraftsList.append(Cygnus1)
+	spacecraftsDict["Cygnus1"] = Cygnus1
 	VerneATV1 = VerneATV()
-	spacecraftsList.append(VerneATV1)
+	spacecraftsDict["VerneATV1"] = VerneATV1
 	Progress1 = Progress()
-	spacecraftsList.append(Progress1)
+	spacecraftsDict["Progress1"] = Progress1
 	Kounotori1 = Kounotori()
-	spacecraftsList.append(Kounotori1)
+	spacecraftsDict["Kounotori1"] = Kounotori1
+
+	print (spacecraftsDict)
 
 	with open('Cargolist1.json') as cargolistFile1:    
 	    cargolist1 = json.load(cargolistFile1)
@@ -113,6 +116,7 @@ def main():
 
 
 # Logging: https://fangpenlin.com/posts/2012/08/26/good-logging-practice-in-python/
+# or maybe http://www.patricksoftwareblog.com/python-logging-tutorial/
 def setupLogging(default_path='logging.json',
     default_level=logging.INFO,
     env_key='LOG_CFG'):
@@ -176,6 +180,8 @@ def putCargoinSpacecraftinthefollowingOrder (cargo, spacecraftsList):
 		if spacecraft.kgsleft >= cargo['kgs'] and spacecraft.spaceleft >= cargo['m3']:
 
 			# zet het pakketje in de minst volle spacecrafts
+			# Comment voor iedereen: als we zometeen een lijst hebben met meerdere spacecrafts, dan kun je niet selecteren
+			# op naam en al helemaal niet op country (meerdere spacecrafts uit 1 land zometeen) van een bepaald spacecraft, dan moeten we selecteren op id
 			cargo['location'] = spacecraft.country
 
 			# update de locatie over van de spacecrafts
@@ -221,13 +227,15 @@ def hillClimber (cargolist, spacecraftsList):
 			# http://stackoverflow.com/questions/7141208/python-simple-if-or-logic-statement
 			if (swapped1['location'] != 'Ground' and swapped2['location'] == 'Ground'):
 
-
-				# Comment voor Laurens, of ik het nou als dict of als list doe, ik krijg de onderstaande regel nog niet werkend.
-
 				# If the package on the ground is larger and there is enough room (in kg and m3) to swap, then swap
-				if (swapped1[objective] < swapped2[objective] and (spacecraftsList[swapped1['location']].kgsleft >= (swapped2['kgs']-swapped1['kgs']) and spacecraftsList[swapped1['location']].spaceleft >= (swapped2['m3']-swapped1['m3'])):
+
+
+				# Comment voor iedereen, of ik de spacecraftlist nou als dict of als list doe, ik krijg de onderstaande regel nog niet werkend.
+				# Wellicht is het een idee om de objecten in de cargolist te storen. Dan kun je gewoon binnen de dictionairy van een cargo-item 
+				#
+				if (swapped1[objective] < swapped2[objective] and (spacecraftsDict[swapped1['location']].kgsleft >= (swapped2['kgs']-swapped1['kgs']) and spacecraftsDict[swapped1['location']].spaceleft >= (swapped2['m3']-swapped1['m3'])):
 					
-					# Comment: Misschien later nog een all-purpose swap functie maken, we doen dit meerdere keren maar de
+					# Comment voor iedereen: Misschien later nog een all-purpose swap functie maken, we doen dit meerdere keren maar de
 					# putcargoinspacecraft function is niet algemeen genoeg voor deze functie
 
 					# How to swap in Python:
@@ -235,13 +243,14 @@ def hillClimber (cargolist, spacecraftsList):
 					swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
 
 					# Update spacecraft 
+					'''
+					Pseudecode:
+					kgsleft of spacecraft of swapped1 decrease by (swapped2(kgs)-swapped1(kgs))
+					spaceleft of spacecraft of swapped1 decrease by (swapped2(m3)-swapped1(m3))
 
+					'''
 
-					#
-
-					# Store swap in the corresponding objective's list (m3 or kg)
-					if (objective = "m3"):
-						m3OnGroundList.append
+					# Log the configuration of the location of all cargo (comment: daarmee kunnen we vervolgens alles berekenen wat we willen) and which iteration this was
 
 
 

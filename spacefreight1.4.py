@@ -226,6 +226,7 @@ def hillClimber (cargolist, spacecraftsList):
 
 			# If one of the two is on the ground and the other in the spacecraft
 			# Condition 1: swapping reduces objective on the ground (in this case m3)
+			# als je 2 en 3 niet snapt: http://stackoverflow.com/questions/7125467/find-object-in-list-that-has-attribute-equal-to-some-value-that-meets-any-condi
 			# Condition 2: swapping is possible for kilograms
 			# Condition 3: swapping is possible for m3
 			# If conditions are met: update spaceleft and kgsleft and swap location of cargo

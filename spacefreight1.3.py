@@ -69,6 +69,19 @@ class Kounotori(Spacecraft):
 
 def main():
 
+	# Logging: https://fangpenlin.com/posts/2012/08/26/good-logging-practice-in-python/
+	# or maybe http://www.patricksoftwareblog.com/python-logging-tutorial/
+
+	logger = logging.getLogger(__name__)
+	logging.basicConfig(level=logging.INFO)
+	logging.info('Start reading database')
+	# read database here
+	records = {'john': 55, 'tom': 66}
+	logger.debug('Records: %s', records)
+	logger.info('Updating records ...')
+	# update records here
+	logger.info('Finish updating records')
+
 
 	# setupLogging()
 
@@ -112,29 +125,11 @@ def main():
 	for Spacecraft in spacecraftsList:
 		Spacecraft.displaySpacecraft()
 
-	hillClimber(cargolist1, spacecraftsList)
+	#hillClimber(cargolist1, spacecraftsList)
 
 
-# Logging: https://fangpenlin.com/posts/2012/08/26/good-logging-practice-in-python/
-# or maybe http://www.patricksoftwareblog.com/python-logging-tutorial/
-def setupLogging(default_path='logging.json',
-    default_level=logging.INFO,
-    env_key='LOG_CFG'):
 
-    """Setup logging configuration
 
-    """
-
-    path = default_path
-    value = os.getenv(env_key, None)
-    if value:
-        path = value
-    if os.path.exists(path):
-        with open(path, 'rt') as f:
-            config = json.load(f)
-        logging.config.dictConfig(config)
-    else:
-        logging.basicConfig(level=default_level)
 
 # Algorithm to pack cargolist on most weight left
 def cargoOnlyWeightLeftAircraft (cargolist):
@@ -189,77 +184,77 @@ def putCargoinSpacecraftinthefollowingOrder (cargo, spacecraftsList):
 			spacecraft.spaceleft -= cargo['m3']
 			break
 
-def hillClimber (cargolist, spacecraftsList):
+# def hillClimber (cargolist, spacecraftsList):
 
-	'''
-	This Hillclimber Algorithm accepts new situations as better when:
-	- There is less m3 or kg left on the ground
-	- The trade was between spacecrafts and the spacecraft that innitially had 
-	more space (m3) or more kg left, now has even more space or kg left.
-	(so that a (larger) package from the ground might fit in this spacecraft now)
+# 	'''
+# 	This Hillclimber Algorithm accepts new situations as better when:
+# 	- There is less m3 or kg left on the ground
+# 	- The trade was between spacecrafts and the spacecraft that innitially had 
+# 	more space (m3) or more kg left, now has even more space or kg left.
+# 	(so that a (larger) package from the ground might fit in this spacecraft now)
 
-	LET OP: Random function generates pseudo-random numbers. Hij is snel en efficient, maar niet goed genoeg voor 
-	bijvoorbeeld wachtwoorden
-	(https://docs.python.org/2/library/random.html)
+# 	LET OP: Random function generates pseudo-random numbers. Hij is snel en efficient, maar niet goed genoeg voor 
+# 	bijvoorbeeld wachtwoorden
+# 	(https://docs.python.org/2/library/random.html)
 
-	'''
-	# Objectives can be m3 or kg in this algorithm
-	objective = "m3"
+# 	'''
+# 	# Objectives can be m3 or kg in this algorithm
+# 	objective = "m3"
 
-	# Number of swaps
-	# Run hillclimber x times
-	for i in range (ITERATIONS):
+# 	# Number of swaps
+# 	# Run hillclimber x times
+# 	for i in range (ITERATIONS):
 
-			# Comment voor Laurens:
-			# gebruik == ipv is (zie bijvoorbeeld het bestand 'information.py')
-			# is er een reden waarom je daar is gebruikt ipv ==?
-			# http://stackoverflow.com/questions/2209755/python-operation-vs-is-not
+# 			# Comment voor Laurens:
+# 			# gebruik == ipv is (zie bijvoorbeeld het bestand 'information.py')
+# 			# is er een reden waarom je daar is gebruikt ipv ==?
+# 			# http://stackoverflow.com/questions/2209755/python-operation-vs-is-not
 
-			# Randomly pick two cargo items from the cargolist
-			swapped1 = random.choice(cargolist)
-			swapped2 = random.choice(cargolist)
+# 			# Randomly pick two cargo items from the cargolist
+# 			swapped1 = random.choice(cargolist)
+# 			swapped2 = random.choice(cargolist)
 
-			# If both are on the ground, pick new random cargo
-			if (swapped1['location'] == 'Ground' and swapped2['location'] == 'Ground'):
-				break
+# 			# If both are on the ground, pick new random cargo
+# 			if (swapped1['location'] == 'Ground' and swapped2['location'] == 'Ground'):
+# 				break
 
-			# If one of the two is on the ground and the other in the spacecraft
-			# http://stackoverflow.com/questions/7141208/python-simple-if-or-logic-statement
-			if (swapped1['location'] != 'Ground' and swapped2['location'] == 'Ground'):
+# 			# If one of the two is on the ground and the other in the spacecraft
+# 			# http://stackoverflow.com/questions/7141208/python-simple-if-or-logic-statement
+# 			if (swapped1['location'] != 'Ground' and swapped2['location'] == 'Ground'):
 
-				# If the package on the ground is larger and there is enough room (in kg and m3) to swap, then swap
+# 				# If the package on the ground is larger and there is enough room (in kg and m3) to swap, then swap
 
 
-				# Comment voor iedereen, of ik de spacecraftlist nou als dict of als list doe, ik krijg de onderstaande regel nog niet werkend.
-				# Wellicht is het een idee om de objecten in de cargolist te storen. Dan kun je gewoon binnen de dictionairy van een cargo-item 
-				#
-				if (swapped1[objective] < swapped2[objective] and (spacecraftsDict[swapped1['location']].kgsleft >= (swapped2['kgs']-swapped1['kgs']) and spacecraftsDict[swapped1['location']].spaceleft >= (swapped2['m3']-swapped1['m3'])):
+# 				# Comment voor iedereen, of ik de spacecraftlist nou als dict of als list doe, ik krijg de onderstaande regel nog niet werkend.
+# 				# Wellicht is het een idee om de objecten in de cargolist te storen. Dan kun je gewoon binnen de dictionairy van een cargo-item 
+# 				#
+# 				if (swapped1[objective] < swapped2[objective] and (spacecraftsDict[swapped1['location']].kgsleft >= (swapped2['kgs']-swapped1['kgs']) and spacecraftsDict[swapped1['location']].spaceleft >= (swapped2['m3']-swapped1['m3'])):
 					
-					# Comment voor iedereen: Misschien later nog een all-purpose swap functie maken, we doen dit meerdere keren maar de
-					# putcargoinspacecraft function is niet algemeen genoeg voor deze functie
+# 					# Comment voor iedereen: Misschien later nog een all-purpose swap functie maken, we doen dit meerdere keren maar de
+# 					# putcargoinspacecraft function is niet algemeen genoeg voor deze functie
 
-					# How to swap in Python:
-					# http://stackoverflow.com/questions/14836228/is-there-a-standardized-method-to-swap-two-variables-in-python
-					swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
+# 					# How to swap in Python:
+# 					# http://stackoverflow.com/questions/14836228/is-there-a-standardized-method-to-swap-two-variables-in-python
+# 					swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
 
-					# Update spacecraft 
-					'''
-					Pseudecode:
-					kgsleft of spacecraft of swapped1 decrease by (swapped2(kgs)-swapped1(kgs))
-					spaceleft of spacecraft of swapped1 decrease by (swapped2(m3)-swapped1(m3))
+# 					# Update spacecraft 
+# 					'''
+# 					Pseudecode:
+# 					kgsleft of spacecraft of swapped1 decrease by (swapped2(kgs)-swapped1(kgs))
+# 					spaceleft of spacecraft of swapped1 decrease by (swapped2(m3)-swapped1(m3))
 
-					'''
+# 					'''
 
-					# Log the configuration of the location of all cargo (comment: daarmee kunnen we vervolgens alles berekenen wat we willen) and which iteration this was
-
-
+# 					# Log the configuration of the location of all cargo (comment: daarmee kunnen we vervolgens alles berekenen wat we willen) and which iteration this was
 
 
-			if (swapped1['location'] == 'Ground' and swapped2['location'] != 'Ground'):		
 
 
-			# If both are in spacecraft
-			if (swapped1['location'] != 'Ground' and swapped2['location'] != 'Ground'):
+# 			if (swapped1['location'] == 'Ground' and swapped2['location'] != 'Ground'):		
+
+
+# 			# If both are in spacecraft
+# 			if (swapped1['location'] != 'Ground' and swapped2['location'] != 'Ground'):
 
 			
 

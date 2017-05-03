@@ -35,6 +35,7 @@ class Spacecraft(object):
 		self.spaceleft = spaceleft
 		self.kgsleft = kgsleft
 		self.density = kgsleft / spaceleft
+		self.kgstimesspace = kgsleft * spaceleft
 		self.country = country
 
 	def displaySpacecraft(self):
@@ -100,20 +101,25 @@ def main():
 
 	# Random
 	# cargolist1 = sortmeth.sortRandom(cargolist1)
-	inf.infoCargoGround(cargolist1)
 
 
 	# cargoOnlyWeightLeftAircraft(cargolist1)
 	cargoMostDensityLeftAircraft(cargolist1)
 	# cargoRandom(cargolist1)
 
-	inf.infoCargoGround(cargolist1)
 
 	# Display Spacecrafts
-	# for Spacecraft in spacecraftsList:
-	# 	Spacecraft.displaySpacecraft()
+	for Spacecraft in spacecraftsList:
+		Spacecraft.displaySpacecraft()
+
+	inf.infoCargoGround(cargolist1)
+
 
 	hillClimber(cargolist1, spacecraftsList)
+
+		# Display Spacecrafts
+	for Spacecraft in spacecraftsList:
+		Spacecraft.displaySpacecraft()
 
 	# ter vergelijking na hillclimber
 	inf.infoCargoGround(cargolist1)
@@ -210,57 +216,79 @@ def hillClimber (cargolist, spacecraftsList):
 	'''
 	# Objectives can be m3 or kg in this algorithm
 	objective = "m3"
+	countertje = 0
 
 	# Number of swaps
 	# Run hillclimber x times
 	for i in range(ITERATIONS):
 
-			# Comment voor Laurens:
-			# gebruik == ipv is (zie bijvoorbeeld het bestand 'information.py')
-			# is er een reden waarom je daar is gebruikt ipv ==?
-			# http://stackoverflow.com/questions/2209755/python-operation-vs-is-not
+		# Comment voor Laurens:
+		# gebruik == ipv is (zie bijvoorbeeld het bestand 'information.py')
+		# is er een reden waarom je daar is gebruikt ipv ==?
+		# http://stackoverflow.com/questions/2209755/python-operation-vs-is-not
 
-			# Randomly pick two cargo items from the cargolist
-			swapped1 = random.choice(cargolist)
-			swapped2 = random.choice(cargolist)
+		# Randomly pick two cargo items from the cargolist
+		swapped1 = random.choice(cargolist)
+		swapped2 = random.choice(cargolist)
 
-			# If one of the two is on the ground and the other in the spacecraft
-			# Condition 1: swapping reduces objective on the ground (in this case m3)
-			# als je 2 en 3 niet snapt: http://stackoverflow.com/questions/7125467/find-object-in-list-that-has-attribute-equal-to-some-value-that-meets-any-condi
-			# Condition 2: swapping is possible for kilograms
-			# Condition 3: swapping is possible for m3
-			# If conditions are met: update spaceleft and kgsleft and swap location of cargo
-			if (swapped1['location'] != 'Ground' and swapped2['location'] == 'Ground'):
-
-
-				if (swapped1[objective] < swapped2[objective]
-				and next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgsleft >= swapped2['kgs'] - swapped1['kgs']
-				and next((x for x in spacecraftsList if x.name == swapped1['location']), None).spaceleft >= swapped2['m3'] - swapped1['m3']):
-
-					next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgsleft -= swapped2['kgs'] - swapped1['kgs']
-					next((x for x in spacecraftsList if x.name == swapped1['location']), None).spaceleft -= swapped2['m3'] - swapped1['m3']
-					swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
-
-			elif (swapped1['location'] == 'Ground' and swapped2['location'] != 'Ground'):
-
-				if (swapped2[objective] < swapped1[objective]
-				and next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgsleft >= swapped1['kgs'] - swapped2['kgs']
-				and next((x for x in spacecraftsList if x.name == swapped2['location']), None).spaceleft >= swapped1['m3'] - swapped2['m3']):
-
-					next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgsleft -= swapped1['kgs'] - swapped2['kgs']
-					next((x for x in spacecraftsList if x.name == swapped2['location']), None).spaceleft -= swapped1['m3'] - swapped2['m3']
-					swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
+		# If one of the two is on the ground and the other in the spacecraft
+		# Condition 1: swapping reduces objective on the ground (in this case m3)
+		# als je 2 en 3 niet snapt: http://stackoverflow.com/questions/7125467/find-object-in-list-that-has-attribute-equal-to-some-value-that-meets-any-condi
+		# Condition 2: swapping is possible for kilograms
+		# Condition 3: swapping is possible for m3
+		# If conditions are met: update spaceleft and kgsleft and swap location of cargo
+		if (swapped1['location'] == 'Ground' and swapped2['location'] != 'Ground'):
 
 
-			# If both are in spacecraft:TODO
-			# elif (swapped1['location'] != 'Ground' and swapped2['location'] != 'Ground'):
+			if (swapped1[objective] > swapped2[objective]
+			and next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgsleft >= swapped1['kgs'] - swapped2['kgs']
+			and next((x for x in spacecraftsList if x.name == swapped2['location']), None).spaceleft >= swapped1['m3'] - swapped2['m3']):
 
-				# TODO
+				next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgsleft -= swapped1['kgs'] - swapped2['kgs']
+				next((x for x in spacecraftsList if x.name == swapped2['location']), None).spaceleft -= swapped1['m3'] - swapped2['m3']
+				swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
+
+		elif (swapped1['location'] != 'Ground' and swapped2['location'] == 'Ground'):
+
+			if (swapped2[objective] > swapped1[objective]
+			and next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgsleft >= swapped2['kgs'] - swapped1['kgs']
+			and next((x for x in spacecraftsList if x.name == swapped1['location']), None).spaceleft >= swapped2['m3'] - swapped1['m3']):
+
+				next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgsleft -= swapped2['kgs'] - swapped1['kgs']
+				next((x for x in spacecraftsList if x.name == swapped1['location']), None).spaceleft -= swapped2['m3'] - swapped1['m3']
+				swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
+
+
+		# If both are in spacecraft
+		elif (swapped1['location'] != 'Ground' and swapped2['location'] != 'Ground'):
+
+			if (swapped1['kgstimesspace'] > swapped2['kgstimesspace']
+			and next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgsleft >= swapped1['kgs'] - swapped2['kgs']
+			and next((x for x in spacecraftsList if x.name == swapped2['location']), None).spaceleft >= swapped1['m3'] - swapped2['m3']
+			and next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgstimesspace > 
+			    next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgstimesspace):
 				
-			# 	# Comment voor iedereen: Misschien later nog een all-purpose swap functie maken, we doen dit meerdere keren maar de
-			# 	# putcargoinspacecraft function is niet algemeen genoeg voor deze functie
+				next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgsleft -= swapped1['kgs'] - swapped2['kgs']
+				next((x for x in spacecraftsList if x.name == swapped2['location']), None).spaceleft -= swapped1['m3'] - swapped2['m3']
+				swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
+				countertje += 1
 
-			# Log the configuration of the location of all cargo (comment: daarmee kunnen we vervolgens alles berekenen wat we willen) and which iteration this was
+			if (swapped2['kgstimesspace'] > swapped1['kgstimesspace']
+			and next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgsleft >= swapped2['kgs'] - swapped1['kgs']
+			and next((x for x in spacecraftsList if x.name == swapped1['location']), None).spaceleft >= swapped2['m3'] - swapped1['m3']
+			and next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgstimesspace > 
+			    next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgstimesspace):
+				
+				next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgsleft -= swapped2['kgs'] - swapped1['kgs']
+				next((x for x in spacecraftsList if x.name == swapped1['location']), None).spaceleft -= swapped2['m3'] - swapped1['m3']
+				swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
+				countertje += 1
+		
+	print countertje	
+		# 	# Comment voor iedereen: Misschien later nog een all-purpose swap functie maken, we doen dit meerdere keren maar de
+		# 	# putcargoinspacecraft function is niet algemeen genoeg voor deze functie
+
+		# Log the configuration of the location of all cargo (comment: daarmee kunnen we vervolgens alles berekenen wat we willen) and which iteration this was
 
 ### RUN PROGRAM ###
 if __name__ == '__main__':

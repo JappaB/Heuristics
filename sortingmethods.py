@@ -2,7 +2,8 @@
 def unpack (cargolist):
 
 	for cargo in cargolist:
-		cargo['density'] = (cargo['kgs']/cargo['m3'])
+		cargo['density'] = cargo['kgs'] / cargo['m3']
+		cargo['kgstimesspace'] = cargo['kgs'] * cargo['m3']
 		cargo['location'] = 'Ground'
 
 	return cargolist

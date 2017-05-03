@@ -22,7 +22,7 @@ import information as inf
 # Declare dict with spacecraft names (as objects)
 spacecraftsList = []
 # Comment: pas hier aan hoeveel iteraties je HC of SA wilt laten doen Number of iterations for HC and SA algorithm
-ITERATIONS = 100000
+ITERATIONS = 1000000
 
 
 # Create classes for spacecrafts
@@ -166,7 +166,7 @@ def cargoOnlyWeightLeftAircraft (cargolist):
 def cargoMostDensityLeftAircraft (cargolist):
 
 	# voor elk pakketje in de lijst
-	for cargo in cargolist[:90]:
+	for cargo in cargolist:
 
 		# sort list with available spacecrafts on the density of the capacity that is left
 		spacecraftsList.sort(key = lambda k: k.density, reverse = True)
@@ -275,7 +275,6 @@ def hillClimber (cargolist, spacecraftsList):
 		# 		next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgsleft -= swapped1['kgs'] - swapped2['kgs']
 		# 		next((x for x in spacecraftsList if x.name == swapped2['location']), None).spaceleft -= swapped1['m3'] - swapped2['m3']
 		# 		swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
-		# 		countertje += 1
 
 		# 	if (swapped2['kgstimesspace'] > swapped1['kgstimesspace']
 		# 	and next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgsleft >= swapped2['kgs'] - swapped1['kgs']
@@ -286,7 +285,7 @@ def hillClimber (cargolist, spacecraftsList):
 		# 		next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgsleft -= swapped2['kgs'] - swapped1['kgs']
 		# 		next((x for x in spacecraftsList if x.name == swapped1['location']), None).spaceleft -= swapped2['m3'] - swapped1['m3']
 		# 		swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
-		# 		countertje += 1
+
 		
 	print 'aantal swaps', aantalswaps	
 		# 	# Comment voor iedereen: Misschien later nog een all-purpose swap functie maken, we doen dit meerdere keren maar de

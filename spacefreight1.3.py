@@ -12,7 +12,6 @@ Laurens vd Ziel (10653384)
 import random
 import json
 import os
-import logging
 from operator import itemgetter
 import sortingmethods as sortmeth
 import information as inf

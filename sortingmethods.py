@@ -1,11 +1,20 @@
 # Set all packages back on ground
 def unpack (cargolist):
 
+	m3Ground = 0
+	kgGround = 0
+	cargoOnGround = 0
+
 	for cargo in cargolist:
 		cargo['density'] = cargo['kgs'] / cargo['m3']
 		cargo['kgstimesspace'] = cargo['kgs'] * cargo['m3']
 		cargo['location'] = 'Ground'
+		kgGround += cargo['kgs']
+		m3Ground += cargo['m3']
+		cargoOnGround += 1
 
+	metadata = {"id":"MetaDataOnGround", "kgs":kgGround, "m3":m3Ground, "cargoOnGround":cargoOnGround, "location": None}
+	cargolist.append(metadata)
 	return cargolist
 
 # Sort random

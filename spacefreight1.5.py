@@ -21,7 +21,7 @@ import logging
 # Declare dict with spacecraft names (as objects)
 spacecraftsList = []
 # Comment: pas hier aan hoeveel iteraties je HC of SA wilt laten doen Number of iterations for HC and SA algorithm
-ITERATIONS = 1000000
+ITERATIONS = 1000
 # Dafualt Logging settings
 defaultFormatter = logging.Formatter('%(asctime)s,%(name)s,%(message)s')
 defaultLogingLevel = logging.INFO
@@ -105,12 +105,11 @@ def main():
 
 	# Random
 	# cargolist1 = sortmeth.sortRandom(cargolist1)
-
-
+	print cargolist1
 	# cargoOnlyWeightLeftAircraft(cargolist1)
 	cargoMostDensityLeftAircraft(cargolist1)
 	# cargoRandom(cargolist1)
-
+	print cargolist1
 
 	# Display Spacecrafts
 	# for Spacecraft in spacecraftsList:
@@ -204,15 +203,24 @@ def hillClimber (cargolist, spacecraftsList):
 	aantalswaps = 0
 	# Setup logger for this algorithm
 	logger = logging.getLogger(__name__)
+	logger.setLevel(logging.INFO)
 	fileHandler = logging.FileHandler('HillClimberData.csv')
-	fileHandler.setLevel(defaultLogingLevel)
+	#fileHandler.setLevel(defaultLogingLevel)
 	fileHandler.setFormatter(defaultFormatter)
 	logger.addHandler(fileHandler)
+	logger.info("New Hillclimber Round")
 
+
+	# Metadata to use for logging (metadata is a dict with the total m3, kgs, number of cargo on ground)
+	# Will be updated below after each swap
+	metadata = (cargo for cargo in cargolist if cargo["id"] == "MetaDataOnGround").next()
 
 	# Number of swaps
 	# Run hillclimber x times
 	for i in range(ITERATIONS):
+
+		# Log the swap and the resulting m3 and kg left on the ground
+		logger.info('{},{},{},{},{}'.format(i, aantalswaps, metadata['kgs'], metadata['m3'], metadata['cargoOnGround']))
 
 		# Comment voor Laurens:
 		# gebruik == ipv is (zie bijvoorbeeld het bestand 'information.py')
@@ -223,8 +231,7 @@ def hillClimber (cargolist, spacecraftsList):
 		swapped1 = random.choice(cargolist)
 		swapped2 = random.choice(cargolist)
 
-		# Log the swap and the resulting m3 and kg left on the ground
-		logger.info('{},{}'.format(i, aantalswaps,))
+
 
 		# If one of the two is on the ground and the other in the spacecraft
 		# Condition 1: swapping reduces objective on the ground (in this case m3)
@@ -244,6 +251,13 @@ def hillClimber (cargolist, spacecraftsList):
 				swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
 				aantalswaps += 1
 
+				# Update the metadata for logging purposes
+				metadata['kgs'] -= (swapped1['kgs'] - swapped2['kgs'])
+				metadata['m3'] -= (swapped1['m3'] - swapped2['m3'])
+
+				#Comment: We kijken nergens of er niet gewoon een pakketje zonder te swappen in een spacecraft past!
+				#metadata['cargoOnGround'] -= 
+
 
 
 
@@ -257,6 +271,8 @@ def hillClimber (cargolist, spacecraftsList):
 				next((x for x in spacecraftsList if x.name == swapped1['location']), None).spaceleft -= swapped2['m3'] - swapped1['m3']
 				swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
 				aantalswaps += 1
+				metadata['kgs'] -= (swapped2['kgs'] - swapped1['kgs'])
+				metadata['m3'] -= (swapped2['m3'] - swapped1['m3'])
 
 
 		# # If both are in spacecraft

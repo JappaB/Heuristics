@@ -12,18 +12,20 @@ Laurens vd Ziel (10653384)
 import random
 import json
 import os
-import logging
 from operator import itemgetter
 import sortingmethods as sortmeth
 import information as inf
-
+import logging
 
 # Global variables
 # Declare dict with spacecraft names (as objects)
 spacecraftsList = []
 # Comment: pas hier aan hoeveel iteraties je HC of SA wilt laten doen Number of iterations for HC and SA algorithm
 ITERATIONS = 1000000
-
+# Dafualt Logging settings
+defaultFormatter = logging.Formatter('%(asctime)s,%(name)s,%(message)s')
+defaultLogingLevel = logging.INFO
+defaultFileHandler = 'spacefreight.csv'
 
 # Create classes for spacecrafts
 class Spacecraft(object):
@@ -89,7 +91,7 @@ def main():
 	with open('Cargolist1.json') as cargolistFile1:    
 	    cargolist1 = json.load(cargolistFile1)
 
-		### SORT CARGOLIST ###
+	### SORT CARGOLIST ###
 	# Unpack
 	cargolist1 = sortmeth.unpack(cargolist1)
 
@@ -97,9 +99,9 @@ def main():
 	# cargolist1 = sortmeth.sortWeight(cargolist1)
 
 	# Density
-	cargolist1 = sortmeth.sortDensity(cargolist1)
-	for cargo in cargolist1:
-		print cargo["id"]
+	# cargolist1 = sortmeth.sortDensity(cargolist1)
+	# for cargo in cargolist1:
+	# 	print (cargo["id"])
 
 	# Random
 	# cargolist1 = sortmeth.sortRandom(cargolist1)
@@ -114,7 +116,7 @@ def main():
 	# for Spacecraft in spacecraftsList:
 	# 	Spacecraft.displaySpacecraft()
 
-	inf.infoCargoGround(cargolist1)
+	#inf.infoCargoGround(cargolist1)
 
 
 	hillClimber(cargolist1, spacecraftsList)
@@ -124,29 +126,10 @@ def main():
 	# 	Spacecraft.displaySpacecraft()
 
 	# ter vergelijking na hillclimber
-	inf.infoCargoGround(cargolist1)
+	#inf.infoCargoGround(cargolist1)
 
 
-# Logging: https://fangpenlin.com/posts/2012/08/26/good-logging-practice-in-python/
-# or maybe http://www.patricksoftwareblog.com/python-logging-tutorial/
-def setupLogging(default_path='logging.json',
-    default_level=logging.INFO,
-    env_key='LOG_CFG'):
 
-    """Setup logging configuration
-
-    """
-
-    path = default_path
-    value = os.getenv(env_key, None)
-    if value:
-        path = value
-    if os.path.exists(path):
-        with open(path, 'rt') as f:
-            config = json.load(f)
-        logging.config.dictConfig(config)
-    else:
-        logging.basicConfig(level=default_level)
 
 # Algorithm to pack cargolist on most weight left
 def cargoOnlyWeightLeftAircraft (cargolist):
@@ -219,6 +202,13 @@ def hillClimber (cargolist, spacecraftsList):
 	# Objectives can be m3 or kg in this algorithm
 	objective = "m3"
 	aantalswaps = 0
+	# Setup logger for this algorithm
+	logger = logging.getLogger(__name__)
+	fileHandler = logging.FileHandler('HillClimberData.csv')
+	fileHandler.setLevel(defaultLogingLevel)
+	fileHandler.setFormatter(defaultFormatter)
+	logger.addHandler(fileHandler)
+
 
 	# Number of swaps
 	# Run hillclimber x times
@@ -232,6 +222,9 @@ def hillClimber (cargolist, spacecraftsList):
 		# Randomly pick two cargo items from the cargolist
 		swapped1 = random.choice(cargolist)
 		swapped2 = random.choice(cargolist)
+
+		# Log the swap and the resulting m3 and kg left on the ground
+		logger.info('{},{}'.format(i, aantalswaps,))
 
 		# If one of the two is on the ground and the other in the spacecraft
 		# Condition 1: swapping reduces objective on the ground (in this case m3)
@@ -250,6 +243,9 @@ def hillClimber (cargolist, spacecraftsList):
 				next((x for x in spacecraftsList if x.name == swapped2['location']), None).spaceleft -= swapped1['m3'] - swapped2['m3']
 				swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
 				aantalswaps += 1
+
+
+
 
 		elif (swapped1['location'] != 'Ground' and swapped2['location'] == 'Ground'):
 
@@ -287,7 +283,7 @@ def hillClimber (cargolist, spacecraftsList):
 		# 		swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
 
 		
-	print 'aantal swaps', aantalswaps	
+	print ('aantal swaps', aantalswaps)	
 		# 	# Comment voor iedereen: Misschien later nog een all-purpose swap functie maken, we doen dit meerdere keren maar de
 		# 	# putcargoinspacecraft function is niet algemeen genoeg voor deze functie
 

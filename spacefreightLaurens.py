@@ -43,49 +43,22 @@ class Spacecraft(object):
 	def displaySpacecraft(self):
 		print ("name: ", self.name, ", Spaceleft: ", self.spaceleft, ", Kgsleft: ", self.kgsleft, ", Densityleft: ", self.density, ", Coutry: ", self.country)
 
-class Cygnus(Spacecraft):
-
-	Cygnuscount = 1
-
-	def __init__(self, name='Cygnus'+ str(Cygnuscount), spaceleft=18.9, kgsleft=2000, density=0, country='USA'):
-		Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
-		Cygnus.Cygnuscount += 1
-
-class VerneATV(Spacecraft):
-
-	VerneATVcount = 1
-
-	def __init__(self, name='VerneATV'+ str(VerneATVcount), spaceleft=13.1, kgsleft=2300, density=0, country='Europe'):
-		Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
-		VerneATV.VerneATVcount += 1
-
-clxass Progress(Spacecraft):
-
-	Progresscount = 1
-
-	def __init__(self, name='Progress'+ str(Progresscount), spaceleft=7.6, kgsleft=2400, density=0, country='Russia'):
-		Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
-		Progress.Progresscount += 1
-
-class Kounotori(Spacecraft):
-
-	Kounotoricount = 1
-
-	def __init__(self, name='Kounotori'+ str(Kounotoricount), spaceleft=14, kgsleft=5200, density=0, country='Japan'):
-	 	Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
-	 	Kounotori.Kounotoricount += 1
 
 def main():
 
+
 	# Make spacecrafts
-	# heel makkelijk aan te passen hoe veel je van elk soort wil maken 
-	Cygnuslist = [Cygnus() for i in range(1)]
+	# heel makkelijk aan te passen hoe veel je van elk soort wil maken
+	Cygnuslist = [Spacecraft("Cygnus"+ str(i), 18.9, 2000, 0, "USA") for i in range(1)] 
 	spacecraftsList.extend(Cygnuslist)
-	VerneATVlist = [VerneATV() for i in range(1)]
+
+	VerneATVlist = [Spacecraft("VerneATV"+ str(i), 13.1, 2300, 0, "Europe") for i in range(1)] 
 	spacecraftsList.extend(VerneATVlist)
-	Progresslist = [Progress() for i in range(1)]
+
+	Progresslist = [Spacecraft("Progress"+ str(i), 7.6, 2400, 0, "Russia") for i in range(1)] 
 	spacecraftsList.extend(Progresslist)
-	Kounotorilist = [Kounotori() for i in range(1)]
+
+	Kounotorilist = [Spacecraft("Kounotori"+ str(i), 14, 5200, 0, "Japan") for i in range(1)]
 	spacecraftsList.extend(Kounotorilist)
 
 	with open('Cargolist1.json') as cargolistFile1:    
@@ -105,11 +78,11 @@ def main():
 
 	# Random
 	# cargolist1 = sortmeth.sortRandom(cargolist1)
-	print cargolist1
+	# print cargolist1
 	# cargoOnlyWeightLeftAircraft(cargolist1)
 	cargoMostDensityLeftAircraft(cargolist1)
 	# cargoRandom(cargolist1)
-	print cargolist1
+	# print cargolist1
 
 	# Display Spacecrafts
 	# for Spacecraft in spacecraftsList:
@@ -125,7 +98,7 @@ def main():
 	# 	Spacecraft.displaySpacecraft()
 
 	# ter vergelijking na hillclimber
-	#inf.infoCargoGround(cargolist1)
+	inf.infoCargoGround(cargolist1)
 
 
 
@@ -181,7 +154,7 @@ def putCargoinSpacecraftinthefollowingOrder (cargo, spacecraftsList):
 
 			# update de locatie over van de spacecrafts
 			spacecraft.kgsleft -= cargo['kgs']
-			spacecraft.spaceleft -= cargo['m3']
+			spacecraftsraft.spaceleft -= cargo['m3']
 			break
 
 def hillClimber (cargolist, spacecraftsList):

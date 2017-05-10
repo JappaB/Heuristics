@@ -10,7 +10,7 @@ with open('cargolist1.json') as cargolist:
 
 data = sortmeth.unpack(data)
 data = sortmeth.sortDensity(data)
-data = data[:30]
+data = data
 
 ga = pyeasyga.GeneticAlgorithm(data)        # initialise the GA with data
 ga.population_size = 200                    # increase population size to 200 (default value is 50)

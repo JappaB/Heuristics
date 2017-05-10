@@ -7,7 +7,7 @@ https://www.youtube.com/watch?v=Iqjy9UqKKuo&list=PLQVvvaa0QuDc-3szzjeP6N6b0aDrrK
 
 
 
-to do:
+to do totale project:
 visualiseer:
 - gemiddelde
 - mediaan
@@ -23,6 +23,7 @@ Pittig maar nodig:
 - 8 Combinaties visualiseren:
 * 2 beginsituaties (random, greedy (greedy kan op nóg meer manieren. Greedy nu: cargo is density gesorteerd, je begint bij pakketje met hoogste density 
 	en stopt hem in de hoogste density qua capaciteit) )
+* HC op twee manieren of SA op twee manieren
 
 Vraag voor morgen:
 - Wat plotten we gemiddelde/mediaan/best case van elke combinatie??

@@ -21,7 +21,7 @@ import logging
 # Declare dict with spacecraft names (as objects)
 spacecraftsList = []
 # Comment: pas hier aan hoeveel iteraties je HC of SA wilt laten doen Number of iterations for HC and SA algorithm
-ITERATIONS = 1000
+ITERATIONS = 100000
 # Dafualt Logging settings
 defaultFormatter = logging.Formatter('%(asctime)s,%(name)s,%(message)s')
 defaultLogingLevel = logging.INFO
@@ -59,7 +59,7 @@ class VerneATV(Spacecraft):
 		Spacecraft.__init__(self, name, spaceleft, kgsleft, density, country)
 		VerneATV.VerneATVcount += 1
 
-clxass Progress(Spacecraft):
+class Progress(Spacecraft):
 
 	Progresscount = 1
 

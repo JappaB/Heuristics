@@ -19,7 +19,7 @@ import logging
 
 # Global variables
 # Declare dict with spacecraft names (as objects)
-spacecraftsList = []
+spacecraftsFleet = []
 # Comment: pas hier aan hoeveel iteraties je HC of SA wilt laten doen Number of iterations for HC and SA algorithm
 ITERATIONS = 1000
 # Dafualt Logging settings
@@ -46,118 +46,75 @@ class Spacecraft(object):
 
 def main():
 
+	for j in range(2):
 
-	# Make spacecrafts
-	# heel makkelijk aan te passen hoe veel je van elk soort wil maken
-	Cygnuslist = [Spacecraft("Cygnus"+ str(i), 18.9, 2000, 0, "USA") for i in range(1)] 
-	spacecraftsList.extend(Cygnuslist)
+		# Make spacecrafts
+		# heel makkelijk aan te passen hoe veel je van elk soort wil maken
+		Cygnuslist = [Spacecraft("Cygnus"+ str(i), 18.9, 2000, 0, "USA") for i in range(1)] 
+		spacecraftsFleet.extend(Cygnuslist)
 
-	VerneATVlist = [Spacecraft("VerneATV"+ str(i), 13.1, 2300, 0, "Europe") for i in range(1)] 
-	spacecraftsList.extend(VerneATVlist)
+		VerneATVlist = [Spacecraft("VerneATV"+ str(i), 13.1, 2300, 0, "Europe") for i in range(1)] 
+		spacecraftsFleet.extend(VerneATVlist)
 
-	Progresslist = [Spacecraft("Progress"+ str(i), 7.6, 2400, 0, "Russia") for i in range(1)] 
-	spacecraftsList.extend(Progresslist)
+		Progresslist = [Spacecraft("Progress"+ str(i), 7.6, 2400, 0, "Russia") for i in range(1)] 
+		spacecraftsFleet.extend(Progresslist)
 
-	Kounotorilist = [Spacecraft("Kounotori"+ str(i), 14, 5200, 0, "Japan") for i in range(1)]
-	spacecraftsList.extend(Kounotorilist)
+		Kounotorilist = [Spacecraft("Kounotori"+ str(i), 14, 5200, 0, "Japan") for i in range(1)]
+		spacecraftsFleet.extend(Kounotorilist)
 
-	with open('Cargolist1.json') as cargolistFile1:    
-	    cargolist1 = json.load(cargolistFile1)
+		# load cargolist
+		with open('cargolist1.json') as cargolist1:    
+		    cargolist1 = json.load(cargolist1)
 
-	### SORT CARGOLIST ###
-	# Unpack
-	cargolist1 = sortmeth.unpack(cargolist1)
-
-	# Weight
-	# cargolist1 = sortmeth.sortWeight(cargolist1)
-
-	# Density
-	# cargolist1 = sortmeth.sortDensity(cargolist1)
-	# for cargo in cargolist1:
-	# 	print (cargo["id"])
-
-	# Random
-	# cargolist1 = sortmeth.sortRandom(cargolist1)
-	# print cargolist1
-	# cargoOnlyWeightLeftAircraft(cargolist1)
-	cargoMostDensityLeftAircraft(cargolist1)
-	# cargoRandom(cargolist1)
-	# print cargolist1
-
-	# Display Spacecrafts
-	# for Spacecraft in spacecraftsList:
-	# 	Spacecraft.displaySpacecraft()
-
-	#inf.infoCargoGround(cargolist1)
+		# edit cargolist
+		cargolist1 = sortmeth.unpack(cargolist1)
 
 
-	hillClimber(cargolist1, spacecraftsList)
+		# hillClimber(cargolist, cargolistordering, spacecraftordering, spacecraftsFleet)
+		hillClimber(cargolist1, 'density', 'density', "m3")
+		# hillClimber(cargolist1, 'random', 'random', "m3")
 
-	# 	# Display Spacecrafts
-	# for Spacecraft in spacecraftsList:
-	# 	Spacecraft.displaySpacecraft()
+		# 	# Display Spacecrafts
+		# for Spacecraft in spacecraftsFleet:
+		# 	Spacecraft.displaySpacecraft()
 
-	# ter vergelijking na hillclimber
-	inf.infoCargoGround(cargolist1)
-
-
-
-
-# Algorithm to pack cargolist on most weight left
-def cargoOnlyWeightLeftAircraft (cargolist):
-
-	# for every package in cargolist
-	for cargo in cargolist:
-
-		# sorteer locatielijst op gewichtscapaciteit er over is
-		spacecraftsList.sort(key = lambda k: k.kgsleft, reverse = True)
-	
-		# if possible, put cargo in spacecraft following a given order
-		putCargoinSpacecraftinthefollowingOrder(cargo, spacecraftsList)
+		# ter vergelijking na hillclimber
+		inf.infoCargoGround(cargolist1)
 
 
-
-# Algorithm to pack cargolist on most density left
-def cargoMostDensityLeftAircraft (cargolist):
+# Given a cargolist and a spacecraft, for each cargo: order the spacecrafts on a parameter 
+# and put cargo in spacecraft if possible following this order 
+def cargoInSpacecraft (cargolist, parameterOrder):
 
 	# voor elk pakketje in de lijst
 	for cargo in cargolist:
 
-		# sort list with available spacecrafts on the density of the capacity that is left
-		spacecraftsList.sort(key = lambda k: k.density, reverse = True)
+		if parameterOrder == 'random':
+			# sort list with available spacecrafts randomly
+			random.shuffle(spacecraftsFleet)
+
+		else:
+			# sort list with available spacecrafts on the density of the capacity that is left
+			spacecraftsFleet.sort(key = lambda k: getattr(k, parameterOrder), reverse = True)
+
 		
-		# if possible, put cargo in spacecraft following a given order
-		putCargoinSpacecraftinthefollowingOrder(cargo, spacecraftsList)
+		for spacecraft in spacecraftsFleet:
 
-def cargoRandom (cargolist):
+			# check of er genoeg plek is om het pakketje te plaatsen 
+			if spacecraft.kgsleft >= cargo['kgs'] and spacecraft.spaceleft >= cargo['m3']:
 
-	for cargo in cargolist:
+				# zet het pakketje in de minst volle spacecrafts
+				### Als het goed is opgelost door self.name dynamisch the maken m.b.v. counter###
+				# Comment voor iedereen: als we zometeen een lijst hebben met meerdere spacecrafts, dan kun je niet selecteren
+				# op naam en al helemaal niet op country (meerdere spacecrafts uit 1 land zometeen) van een bepaald spacecraft, dan moeten we selecteren op id
+				cargo['location'] = spacecraft.name
 
-		# sort list with available spacecrafts randomly
-		random.shuffle(spacecraftsList)
+				# update de locatie over van de spacecrafts
+				spacecraft.kgsleft -= cargo['kgs']
+				spacecraft.spaceleft -= cargo['m3']
+				break
 
-		# if possible, put cargo in spacecraft following a given order
-		putCargoinSpacecraftinthefollowingOrder(cargo, spacecraftsList)
-
-def putCargoinSpacecraftinthefollowingOrder (cargo, spacecraftsList): 
-
-	for spacecraft in spacecraftsList:
-
-		# check of er genoeg plek is om het pakketje te plaatsen 
-		if spacecraft.kgsleft >= cargo['kgs'] and spacecraft.spaceleft >= cargo['m3']:
-
-			# zet het pakketje in de minst volle spacecrafts
-			### Als het goed is opgelost door self.name dynamisch the maken m.b.v. counter###
-			# Comment voor iedereen: als we zometeen een lijst hebben met meerdere spacecrafts, dan kun je niet selecteren
-			# op naam en al helemaal niet op country (meerdere spacecrafts uit 1 land zometeen) van een bepaald spacecraft, dan moeten we selecteren op id
-			cargo['location'] = spacecraft.name
-
-			# update de locatie over van de spacecrafts
-			spacecraft.kgsleft -= cargo['kgs']
-			spacecraftsraft.spaceleft -= cargo['m3']
-			break
-
-def hillClimber (cargolist, spacecraftsList):
+def hillClimber (cargolist, cargolistordering, spacecraftordering, objective):
 
 	'''
 	This Hillclimber Algorithm accepts new situations as better when:
@@ -171,8 +128,18 @@ def hillClimber (cargolist, spacecraftsList):
 	(https://docs.python.org/2/library/random.html)
 
 	'''
+
+	### SORT CARGOLIST ###
+	# cargolist = sortmeth.cargolistordering(cargolist)
+	if cargolistordering == 'random':
+		random.shuffle(cargolist)
+	else:
+		cargolist = sorted(cargolist, key = lambda k: k[cargolistordering], reverse = True)
+
+	cargoInSpacecraft(cargolist, spacecraftordering)
+
+
 	# Objectives can be m3 or kg in this algorithm
-	objective = "m3"
 	aantalswaps = 0
 	# Setup logger for this algorithm
 	logger = logging.getLogger(__name__)
@@ -216,11 +183,11 @@ def hillClimber (cargolist, spacecraftsList):
 
 
 			if (swapped1[objective] > swapped2[objective]
-			and next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgsleft >= swapped1['kgs'] - swapped2['kgs']
-			and next((x for x in spacecraftsList if x.name == swapped2['location']), None).spaceleft >= swapped1['m3'] - swapped2['m3']):
+			and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).kgsleft >= swapped1['kgs'] - swapped2['kgs']
+			and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).spaceleft >= swapped1['m3'] - swapped2['m3']):
 
-				next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgsleft -= swapped1['kgs'] - swapped2['kgs']
-				next((x for x in spacecraftsList if x.name == swapped2['location']), None).spaceleft -= swapped1['m3'] - swapped2['m3']
+				next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).kgsleft -= swapped1['kgs'] - swapped2['kgs']
+				next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).spaceleft -= swapped1['m3'] - swapped2['m3']
 				swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
 				aantalswaps += 1
 
@@ -237,11 +204,11 @@ def hillClimber (cargolist, spacecraftsList):
 		elif (swapped1['location'] != 'Ground' and swapped2['location'] == 'Ground'):
 
 			if (swapped2[objective] > swapped1[objective]
-			and next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgsleft >= swapped2['kgs'] - swapped1['kgs']
-			and next((x for x in spacecraftsList if x.name == swapped1['location']), None).spaceleft >= swapped2['m3'] - swapped1['m3']):
+			and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).kgsleft >= swapped2['kgs'] - swapped1['kgs']
+			and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).spaceleft >= swapped2['m3'] - swapped1['m3']):
 
-				next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgsleft -= swapped2['kgs'] - swapped1['kgs']
-				next((x for x in spacecraftsList if x.name == swapped1['location']), None).spaceleft -= swapped2['m3'] - swapped1['m3']
+				next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).kgsleft -= swapped2['kgs'] - swapped1['kgs']
+				next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).spaceleft -= swapped2['m3'] - swapped1['m3']
 				swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
 				aantalswaps += 1
 				metadata['kgs'] -= (swapped2['kgs'] - swapped1['kgs'])
@@ -252,27 +219,27 @@ def hillClimber (cargolist, spacecraftsList):
 		# elif (swapped1['location'] != 'Ground' and swapped2['location'] != 'Ground'):
 
 		# 	if (swapped1['kgstimesspace'] > swapped2['kgstimesspace']
-		# 	and next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgsleft >= swapped1['kgs'] - swapped2['kgs']
-		# 	and next((x for x in spacecraftsList if x.name == swapped2['location']), None).spaceleft >= swapped1['m3'] - swapped2['m3']
-		# 	and next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgstimesspace > 
-		# 	    next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgstimesspace):
+		# 	and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).kgsleft >= swapped1['kgs'] - swapped2['kgs']
+		# 	and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).spaceleft >= swapped1['m3'] - swapped2['m3']
+		# 	and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).kgstimesspace > 
+		# 	    next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).kgstimesspace):
 				
-		# 		next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgsleft -= swapped1['kgs'] - swapped2['kgs']
-		# 		next((x for x in spacecraftsList if x.name == swapped2['location']), None).spaceleft -= swapped1['m3'] - swapped2['m3']
+		# 		next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).kgsleft -= swapped1['kgs'] - swapped2['kgs']
+		# 		next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).spaceleft -= swapped1['m3'] - swapped2['m3']
 		# 		swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
 
 		# 	if (swapped2['kgstimesspace'] > swapped1['kgstimesspace']
-		# 	and next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgsleft >= swapped2['kgs'] - swapped1['kgs']
-		# 	and next((x for x in spacecraftsList if x.name == swapped1['location']), None).spaceleft >= swapped2['m3'] - swapped1['m3']
-		# 	and next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgstimesspace > 
-		# 	    next((x for x in spacecraftsList if x.name == swapped2['location']), None).kgstimesspace):
+		# 	and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).kgsleft >= swapped2['kgs'] - swapped1['kgs']
+		# 	and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).spaceleft >= swapped2['m3'] - swapped1['m3']
+		# 	and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).kgstimesspace > 
+		# 	    next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).kgstimesspace):
 				
-		# 		next((x for x in spacecraftsList if x.name == swapped1['location']), None).kgsleft -= swapped2['kgs'] - swapped1['kgs']
-		# 		next((x for x in spacecraftsList if x.name == swapped1['location']), None).spaceleft -= swapped2['m3'] - swapped1['m3']
+		# 		next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).kgsleft -= swapped2['kgs'] - swapped1['kgs']
+		# 		next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).spaceleft -= swapped2['m3'] - swapped1['m3']
 		# 		swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
 
 		
-	print ('aantal swaps', aantalswaps)	
+	# print ('aantal swaps', aantalswaps)	
 		# 	# Comment voor iedereen: Misschien later nog een all-purpose swap functie maken, we doen dit meerdere keren maar de
 		# 	# putcargoinspacecraft function is niet algemeen genoeg voor deze functie
 

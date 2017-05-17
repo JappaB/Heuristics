@@ -22,7 +22,7 @@ import math
 # Declare dict with spacecraft names (as objects)
 spacecraftsFleet = []
 # Comment: pas hier aan hoeveel iteraties je HC of SA wilt laten doen Number of iterations for HC and SA algorithm
-ITERATIONS = 1000
+ITERATIONS = 10000
 # Dafualt Logging settings
 defaultFormatter = logging.Formatter('%(asctime)s,%(name)s,%(message)s')
 defaultLogingLevel = logging.INFO
@@ -273,10 +273,14 @@ def anneal (cargolist, cargolistordering, spacecraftordering, objective):
 	metadata = (cargo for cargo in cargolist if cargo["id"] == "MetaDataOnGround").next()
 	solution = cargolist
 	old_cost = cost(solution, objective)
+	start_cost = old_cost
 	swaps = 0
-	T = 30000
+	T = 10000
 	T_min = 0.01
-	# alpha = 0.9
+	alpha = 0.9
+
+
+
 	while T > T_min:
 		for i in range(ITERATIONS):
 			swapped1 = random.choice(solution)
@@ -294,11 +298,15 @@ def anneal (cargolist, cargolistordering, spacecraftordering, objective):
 				swaps +=1
 
 				ap = acceptance_probability(old_cost, new_cost, T)
-				# print ap
-				if ap > random.random():
+				# print ap, T, new_cost, old_cost
+				# if new_cost < start_cost: print new_cost
+				if ap > random.random() and ap > 1:
 					solution = new_solution
 					old_cost = new_cost
-		T = T/math.log10((i+2))
+
+		T *= 0.9
+		
+		
 	print swaps
 	return solution, old_cost
 
@@ -306,7 +314,7 @@ def cost (cargolist, objective):
 
 	emptyspace = 0
 	for cargo in cargolist:
-		if cargo['location'] == 'Ground':
+		if cargo['location'] == 'Ground' and cargo['id'] != 'MetaDataOnGround':
 			emptyspace += cargo[objective]
 
 	return emptyspace

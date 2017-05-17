@@ -22,7 +22,7 @@ import math
 # Declare dict with spacecraft names (as objects)
 spacecraftsFleet = []
 # Comment: pas hier aan hoeveel iteraties je HC of SA wilt laten doen Number of iterations for HC and SA algorithm
-ITERATIONS = 100
+ITERATIONS = 1000
 # Dafualt Logging settings
 defaultFormatter = logging.Formatter('%(asctime)s,%(name)s,%(message)s')
 defaultLogingLevel = logging.INFO
@@ -47,7 +47,7 @@ class Spacecraft(object):
 
 def main():
 
-	for j in range(2):
+	for j in range(1):
 
 		# Make spacecrafts
 		# heel makkelijk aan te passen hoe veel je van elk soort wil maken
@@ -73,7 +73,8 @@ def main():
 		# hillClimber(cargolist, cargolistordering, spacecraftordering, spacecraftsFleet)
 		# hillClimber(cargolist1, 'density', 'density', "m3")
 		# hillClimber(cargolist1, 'random', 'random', "m3")
-		anneal(cargolist1, 'density', 'density', "m3")
+		# anneal(cargolist1, 'density', 'density', "m3")
+		anneal(cargolist1, 'random', 'random', "m3")
 
 		# 	# Display Spacecrafts
 		# for Spacecraft in spacecraftsFleet:
@@ -257,7 +258,6 @@ def anneal (cargolist, cargolistordering, spacecraftordering, objective):
 
 
 	# Objectives can be m3 or kg in this algorithm
-	aantalswaps = 0
 	# Setup logger for this algorithm
 	logger = logging.getLogger(__name__)
 	logger.setLevel(logging.INFO)
@@ -267,46 +267,39 @@ def anneal (cargolist, cargolistordering, spacecraftordering, objective):
 	logger.addHandler(fileHandler)
 	logger.info("New Hillclimber Round")
 
-	# for cargo in cargolist:
-	# 	print("cargo {}".format(cargo['id']))
-	# 	print("kgs: {}".format(cargo['kgs']))
-	# 	print("m3: {}\n".format(cargo['m3']))
-	# 	print("location {}".format(cargo['location']))
+	inf.infoCargoGround(cargolist)
 	# Metadata to use for logging (metadata is a dict with the total m3, kgs, number of cargo on ground)
 	# Will be updated below after each swap
 	metadata = (cargo for cargo in cargolist if cargo["id"] == "MetaDataOnGround").next()
 	solution = cargolist
 	old_cost = cost(solution, objective)
-	T = 1.0
-	T_min = 0.1
-	alpha = 0.9
+	swaps = 0
+	T = 30000
+	T_min = 0.01
+	# alpha = 0.9
 	while T > T_min:
-		i = 1
 		for i in range(ITERATIONS):
 			swapped1 = random.choice(solution)
 			swapped2 = random.choice(solution)
-			print swapped1['location']
-			print swapped2['location']
-			if ((swapped1['location'] != 'Ground' and swapped2['location'] != 'Ground') or (swapped1['location'] == 'Ground' and swapped2['location'] == 'Ground')):
-				continue
-			elif ((swapped1['location'] == 'Ground' and swapped2['location'] != 'Ground')
-			and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).kgsleft < swapped1['kgs'] - swapped2['kgs']
-			and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).spaceleft < swapped1['m3'] - swapped2['m3']):
-				continue
-			elif ((swapped1['location'] != 'Ground' and swapped2['location'] == 'Ground')
-			and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).kgsleft < swapped2['kgs'] - swapped1['kgs']
-			and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).spaceleft < swapped2['m3'] - swapped1['m3']):
-				continue
-			
-			new_solution = neighbor(solution, swapped1, swapped2, metadata)
-			new_cost = cost(new_solution, objective)
-			# print old_cost
-			# print new_cost
-			ap = acceptance_probability(old_cost, new_cost, T)
-			if ap > random.random():
-				solution = new_solution
-				old_cost = new_cost
-		T = T*alpha
+
+			if (((swapped1['location'] == 'Ground' and swapped2['location'] != 'Ground')
+			and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).kgsleft >= swapped1['kgs'] - swapped2['kgs']
+			and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).spaceleft >= swapped1['m3'] - swapped2['m3'])
+			or ((swapped1['location'] != 'Ground' and swapped2['location'] == 'Ground')
+			and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).kgsleft >= swapped2['kgs'] - swapped1['kgs']
+			and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).spaceleft >= swapped2['m3'] - swapped1['m3'])):
+
+				new_solution = neighbor(solution, swapped1, swapped2, metadata)
+				new_cost = cost(new_solution, objective)
+				swaps +=1
+
+				ap = acceptance_probability(old_cost, new_cost, T)
+				# print ap
+				if ap > random.random():
+					solution = new_solution
+					old_cost = new_cost
+		T = T/math.log10((i+2))
+	print swaps
 	return solution, old_cost
 
 def cost (cargolist, objective):
@@ -320,25 +313,30 @@ def cost (cargolist, objective):
 
 def acceptance_probability (old_cost, new_cost, T):
 
-	# return math.e^((old_cost-new_cost)/T)
 	return math.exp(((old_cost-new_cost)/T))
 
 def neighbor (solution, swapped1, swapped2, metadata):
 
 
-	swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
-
 	if (swapped1['location'] == 'Ground' and swapped2['location'] != 'Ground'):
 		next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).kgsleft -= swapped1['kgs'] - swapped2['kgs']
 		next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).spaceleft -= swapped1['m3'] - swapped2['m3']
+
+		# Update the metadata for logging purposes
+		metadata['kgs'] -= (swapped1['kgs'] - swapped2['kgs'])
+		metadata['m3'] -= (swapped1['m3'] - swapped2['m3'])
 
 	elif (swapped1['location'] != 'Ground' and swapped2['location'] == 'Ground'):
 		next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).kgsleft -= swapped2['kgs'] - swapped1['kgs']
 		next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).spaceleft -= swapped2['m3'] - swapped1['m3']
 
-	# Update the metadata for logging purposes
-	metadata['kgs'] -= (swapped1['kgs'] - swapped2['kgs'])
-	metadata['m3'] -= (swapped1['m3'] - swapped2['m3'])
+		# Update the metadata for logging purposes
+		metadata['kgs'] -= (swapped2['kgs'] - swapped1['kgs'])
+		metadata['m3'] -= (swapped2['m3'] - swapped1['m3'])
+
+	swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
+
+
 	return solution
 
 ### RUN PROGRAM ###

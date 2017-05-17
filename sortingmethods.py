@@ -13,7 +13,7 @@ def unpack (cargolist):
 		m3Ground += cargo['m3']
 		cargoOnGround += 1
 
-	metadata = {"id":"MetaDataOnGround", "kgs":kgGround, "m3":m3Ground, "cargoOnGround":cargoOnGround, "location": None}
+	metadata = {"id":"MetaDataOnGround", "kgs":kgGround, "m3":m3Ground, "density":kgGround / m3Ground, "cargoOnGround":cargoOnGround, "location": 'Ground'}
 	cargolist.append(metadata)
 	return cargolist
 

@@ -22,7 +22,7 @@ import math
 # Declare dict with spacecraft names (as objects)
 spacecraftsFleet = []
 # Comment: pas hier aan hoeveel iteraties je HC of SA wilt laten doen Number of iterations for HC and SA algorithm
-ITERATIONS = 1000
+ITERATIONS = 30000
 # Dafualt Logging settings
 defaultFormatter = logging.Formatter('%(asctime)s,%(name)s,%(message)s')
 defaultLogingLevel = logging.INFO
@@ -84,23 +84,23 @@ def main():
 		# 	Spacecraft.displaySpacecraft()
 
 		# ter vergelijking na hillclimber
-		inf.infoCargoGround(cargolist1)
+		# inf.infoCargoGround(cargolist1)
 
 
 # Given a cargolist and a spacecraft, for each cargo: order the spacecrafts on a parameter 
 # and put cargo in spacecraft if possible following this order 
-def cargoInSpacecraft (cargolist, parameterOrder):
+def cargoInSpacecraft (cargolist, spacecraftordering):
 
 	# voor elk pakketje in de lijst
 	for cargo in cargolist:
 
-		if parameterOrder == 'random':
+		if spacecraftordering == 'random':
 			# sort list with available spacecrafts randomly
 			random.shuffle(spacecraftsFleet)
 
 		else:
 			# sort list with available spacecrafts on the density of the capacity that is left
-			spacecraftsFleet.sort(key = lambda k: getattr(k, parameterOrder), reverse = True)
+			spacecraftsFleet.sort(key = lambda k: getattr(k, spacecraftordering), reverse = True)
 
 		
 		for spacecraft in spacecraftsFleet:
@@ -143,6 +143,8 @@ def hillClimber (cargolist, cargolistordering, spacecraftordering, objective):
 
 	cargoInSpacecraft(cargolist, spacecraftordering)
 
+	solution = cargolist
+	print cost(solution, objective)
 
 	# Objectives can be m3 or kg in this algorithm
 	aantalswaps = 0
@@ -159,7 +161,7 @@ def hillClimber (cargolist, cargolistordering, spacecraftordering, objective):
 
 	# Metadata to use for logging (metadata is a dict with the total m3, kgs, number of cargo on ground)
 	# Will be updated below after each swap
-	metadata = (cargo for cargo in cargolist if cargo["id"] == "MetaDataOnGround").next()
+	metadata = (cargo for cargo in solution if cargo["id"] == "MetaDataOnGround").next()
 
 	# Number of swaps
 	# Run hillclimber x times
@@ -175,8 +177,8 @@ def hillClimber (cargolist, cargolistordering, spacecraftordering, objective):
 		# http://stackoverflow.com/questions/2209755/python-operation-vs-is-not
 
 		# Randomly pick two cargo items from the cargolist
-		swapped1 = random.choice(cargolist)
-		swapped2 = random.choice(cargolist)
+		swapped1 = random.choice(solution)
+		swapped2 = random.choice(solution)
 
 
 
@@ -201,11 +203,6 @@ def hillClimber (cargolist, cargolistordering, spacecraftordering, objective):
 				metadata['kgs'] -= (swapped1['kgs'] - swapped2['kgs'])
 				metadata['m3'] -= (swapped1['m3'] - swapped2['m3'])
 
-				#Comment: We kijken nergens of er niet gewoon een pakketje zonder te swappen in een spacecraft past!
-				#metadata['cargoOnGround'] -= 
-
-
-
 
 		elif (swapped1['location'] != 'Ground' and swapped2['location'] == 'Ground'):
 
@@ -220,36 +217,8 @@ def hillClimber (cargolist, cargolistordering, spacecraftordering, objective):
 				metadata['kgs'] -= (swapped2['kgs'] - swapped1['kgs'])
 				metadata['m3'] -= (swapped2['m3'] - swapped1['m3'])
 
+	print cost(solution, objective)
 
-		# # If both are in spacecraft
-		# elif (swapped1['location'] != 'Ground' and swapped2['location'] != 'Ground'):
-
-		# 	if (swapped1['kgstimesspace'] > swapped2['kgstimesspace']
-		# 	and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).kgsleft >= swapped1['kgs'] - swapped2['kgs']
-		# 	and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).spaceleft >= swapped1['m3'] - swapped2['m3']
-		# 	and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).kgstimesspace > 
-		# 	    next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).kgstimesspace):
-				
-		# 		next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).kgsleft -= swapped1['kgs'] - swapped2['kgs']
-		# 		next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).spaceleft -= swapped1['m3'] - swapped2['m3']
-		# 		swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
-
-		# 	if (swapped2['kgstimesspace'] > swapped1['kgstimesspace']
-		# 	and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).kgsleft >= swapped2['kgs'] - swapped1['kgs']
-		# 	and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).spaceleft >= swapped2['m3'] - swapped1['m3']
-		# 	and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).kgstimesspace > 
-		# 	    next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).kgstimesspace):
-				
-		# 		next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).kgsleft -= swapped2['kgs'] - swapped1['kgs']
-		# 		next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).spaceleft -= swapped2['m3'] - swapped1['m3']
-		# 		swapped1['location'], swapped2['location'] = swapped2['location'], swapped1['location']
-
-		
-	# print ('aantal swaps', aantalswaps)	
-		# 	# Comment voor iedereen: Misschien later nog een all-purpose swap functie maken, we doen dit meerdere keren maar de
-		# 	# putcargoinspacecraft function is niet algemeen genoeg voor deze functie
-
-		# Log the configuration of the location of all cargo (comment: daarmee kunnen we vervolgens alles berekenen wat we willen) and which iteration this was
 
 
 def anneal (cargolist, cargolistordering, spacecraftordering, objective):
@@ -279,40 +248,58 @@ def anneal (cargolist, cargolistordering, spacecraftordering, objective):
 	metadata = (cargo for cargo in cargolist if cargo["id"] == "MetaDataOnGround").next()
 	solution = cargolist
 	old_cost = cost(solution, objective)
+	print old_cost
+	start_cost = old_cost
 	swaps = 0
-	T = 30000
+	T = 10000
 	T_min = 0.01
-	# alpha = 0.9
+	alpha = 0.9
+
+
 	while T > T_min:
 		for i in range(ITERATIONS):
 			swapped1 = random.choice(solution)
 			swapped2 = random.choice(solution)
 
-			if (((swapped1['location'] == 'Ground' and swapped2['location'] != 'Ground')
+			if ((swapped1['location'] == 'Ground' and swapped2['location'] != 'Ground')
 			and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).kgsleft >= swapped1['kgs'] - swapped2['kgs']
-			and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).spaceleft >= swapped1['m3'] - swapped2['m3'])
-			or ((swapped1['location'] != 'Ground' and swapped2['location'] == 'Ground')
+			and next((x for x in spacecraftsFleet if x.name == swapped2['location']), None).spaceleft >= swapped1['m3'] - swapped2['m3']):
+
+				new_cost = old_cost - swapped1[objective] + swapped2[objective]
+				possibleAnneal(old_cost, new_cost, T, solution, swapped1, swapped2, metadata, objective)
+				swaps += 1
+			
+			if ((swapped1['location'] != 'Ground' and swapped2['location'] == 'Ground')
 			and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).kgsleft >= swapped2['kgs'] - swapped1['kgs']
-			and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).spaceleft >= swapped2['m3'] - swapped1['m3'])):
+			and next((x for x in spacecraftsFleet if x.name == swapped1['location']), None).spaceleft >= swapped2['m3'] - swapped1['m3']):
 
-				new_solution = neighbor(solution, swapped1, swapped2, metadata)
-				new_cost = cost(new_solution, objective)
-				swaps +=1
+				new_cost = old_cost - swapped2[objective] + swapped1[objective]
+				possibleAnneal(old_cost, new_cost, T, solution, swapped1, swapped2, metadata, objective)
+				swaps += 1
 
-				ap = acceptance_probability(old_cost, new_cost, T)
-				# print ap
-				if ap > random.random():
-					solution = new_solution
-					old_cost = new_cost
-		T = T/math.log10((i+2))
+		T *= 0.9
+		
+	print cost(solution, objective)
 	print swaps
+	return solution
+
+def possibleAnneal (old_cost, new_cost, T, solution, swapped1, swapped2, metadata, objective):
+
+	ap = acceptance_probability(old_cost, new_cost, T)
+	# print ap, T, new_cost, old_cost
+	# if new_cost < old_cost: print new_cost, ap
+	if ap > random.random():
+		solution = neighbor(solution, swapped1, swapped2, metadata)
+		# print cost(solution, objective)
+		old_cost = new_cost
+
 	return solution, old_cost
 
 def cost (cargolist, objective):
 
 	emptyspace = 0
 	for cargo in cargolist:
-		if cargo['location'] == 'Ground':
+		if cargo['location'] == 'Ground' and cargo['id'] != 'MetaDataOnGround':
 			emptyspace += cargo[objective]
 
 	return emptyspace

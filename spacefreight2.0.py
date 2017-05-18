@@ -47,7 +47,12 @@ class Spacecraft(object):
 
 def main():
 
-	for j in range(1):
+	# load cargolist
+	with open('cargolist1.json') as cargolist1:    
+		cargolist1 = json.load(cargolist1)
+
+	for j in range(3):
+
 
 		# Make spacecrafts
 		# heel makkelijk aan te passen hoe veel je van elk soort wil maken
@@ -63,18 +68,16 @@ def main():
 		Kounotorilist = [Spacecraft("Kounotori"+ str(i), 14, 5200, 0, "Japan") for i in range(1)]
 		spacecraftsFleet.extend(Kounotorilist)
 
-		# load cargolist
-		with open('cargolist1.json') as cargolist1:    
-		    cargolist1 = json.load(cargolist1)
+
 
 		# edit cargolist
 		cargolist1 = sortmeth.unpack(cargolist1)
 
 		# hillClimber(cargolist, cargolistordering, spacecraftordering, spacecraftsFleet)
-		# hillClimber(cargolist1, 'density', 'density', "m3")
+		hillClimber(cargolist1, 'density', 'density', "m3")
 		# hillClimber(cargolist1, 'random', 'random', "m3")
 		# anneal(cargolist1, 'density', 'density', "m3")
-		anneal(cargolist1, 'random', 'random', "m3")
+		# anneal(cargolist1, 'random', 'random', "m3")
 
 		# 	# Display Spacecrafts
 		# for Spacecraft in spacecraftsFleet:
@@ -151,6 +154,7 @@ def hillClimber (cargolist, cargolistordering, spacecraftordering, objective):
 	fileHandler.setFormatter(defaultFormatter)
 	logger.addHandler(fileHandler)
 	logger.info("New Hillclimber Round")
+	print ("NEW HILLCLIMBER ROUND")
 
 
 	# Metadata to use for logging (metadata is a dict with the total m3, kgs, number of cargo on ground)
@@ -164,6 +168,7 @@ def hillClimber (cargolist, cargolistordering, spacecraftordering, objective):
 		# Log the swap and the resulting m3 and kg left on the ground
 		logger.info('{},{},{},{},{}'.format(i, aantalswaps, metadata['kgs'], metadata['m3'], metadata['cargoOnGround']))
 
+		print('{},{},{},{},{}'.format(i, aantalswaps, metadata['kgs'], metadata['m3'], metadata['cargoOnGround']))
 		# Comment voor Laurens:
 		# gebruik == ipv is (zie bijvoorbeeld het bestand 'information.py')
 		# is er een reden waarom je daar is gebruikt ipv ==?
@@ -246,6 +251,7 @@ def hillClimber (cargolist, cargolistordering, spacecraftordering, objective):
 
 		# Log the configuration of the location of all cargo (comment: daarmee kunnen we vervolgens alles berekenen wat we willen) and which iteration this was
 
+
 def anneal (cargolist, cargolistordering, spacecraftordering, objective):
 	### SORT CARGOLIST ###
 	# cargolist = sortmeth.cargolistordering(cargolist)
@@ -261,7 +267,7 @@ def anneal (cargolist, cargolistordering, spacecraftordering, objective):
 	# Setup logger for this algorithm
 	logger = logging.getLogger(__name__)
 	logger.setLevel(logging.INFO)
-	fileHandler = logging.FileHandler('HillClimberData.csv')
+	fileHandler = logging.FileHandler('SAData.csv')
 	#fileHandler.setLevel(defaultLogingLevel)
 	fileHandler.setFormatter(defaultFormatter)
 	logger.addHandler(fileHandler)

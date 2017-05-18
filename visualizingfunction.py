@@ -21,9 +21,9 @@ Optioneel:
 
 Pittig maar nodig:
 - 8 Combinaties visualiseren:
-* 2 beginsituaties (random, greedy (greedy kan op nóg meer manieren. Greedy nu: cargo is density gesorteerd, je begint bij pakketje met hoogste density 
+ 2 beginsituaties (random, greedy (greedy kan op nog meer manieren. Greedy nu: cargo is density gesorteerd, je begint bij pakketje met hoogste density 
 	en stopt hem in de hoogste density qua capaciteit) )
-* HC op twee manieren of SA op twee manieren
+ HC op twee manieren of SA op twee manieren
 
 Vraag voor morgen:
 - Wat plotten we gemiddelde/mediaan/best case van elke combinatie??
@@ -40,12 +40,23 @@ import matplotlib.pyplot as plt
 from matplotlib import style
 import numpy as np
 
-columns = ["datetime", "miliseconds", "name", "iterations", "swaps","kgs","m3","cargoonground"]
-df = pd.read_csv("HillClimberData.csv", names = columns, header="infer")
 
-print df.head(10)
-print df.tail(10)
-print df
 
-df['m3'].plot()
+df = pd.read_csv("GreedyDensity-Hillclimber.csv")
+
+
+new_header = df.iloc[0] #grab the first row for the header
+df = df[1:] #take the data less the header row
+df.rename(columns = new_header) #set the header row as the df header
+
+df.head()
+results = []
+for i in range(10):
+	results.append(df.iloc[10000*i])
+
+#results = df.iloc[10000]
+#pd.results.head()
+print(results)
+
+df['M3OnGround'].plot()
 plt.show()
